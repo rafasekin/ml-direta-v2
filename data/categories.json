@@ -1,0 +1,50 @@
+{
+  "CADASTRO": {
+    "name": "CADASTRO",
+    "created_at": "2026-03-03 22:20:03"
+  },
+  "INTEGRAÇÃO": {
+    "name": "INTEGRAÇÃO",
+    "created_at": "2026-03-03 22:21:25"
+  },
+  "1ª RETIRADA - CARREGAMENTO": {
+    "name": "1ª RETIRADA - CARREGAMENTO",
+    "created_at": "2026-04-30 15:59:21"
+  },
+  "INTRODUÇÃO A SAÚDE E SEGURANÇA DO TRABALHO": {
+    "name": "INTRODUÇÃO A SAÚDE E SEGURANÇA DO TRABALHO",
+    "created_at": "2026-03-03 22:52:55"
+  },
+  "NORMATIVO (ONLINE)": {
+    "name": "NORMATIVO (ONLINE)",
+    "created_at": "2026-03-04 14:31:31"
+  },
+  "NORMATIVO (PRESENCIAL)": {
+    "name": "NORMATIVO (PRESENCIAL)",
+    "created_at": "2026-03-03 22:23:34"
+  },
+  "2ª RETIRADA - CARREGAMENTO": {
+    "name": "2ª RETIRADA - CARREGAMENTO",
+    "created_at": "2026-03-03 22:27:18"
+  },
+  "OPERAÇÃO": {
+    "name": "OPERAÇÃO",
+    "created_at": "2026-03-03 22:33:08"
+  },
+  "CURSO TÉCNICO": {
+    "name": "CURSO TÉCNICO",
+    "created_at": "2026-03-03 22:25:38"
+  },
+  "DUPLADO": {
+    "name": "DUPLADO",
+    "created_at": "2026-03-20 14:43:38"
+  },
+  "CURSO TÉCNICO RETORNO": {
+    "name": "CURSO TÉCNICO RETORNO",
+    "created_at": "2026-04-30 13:07:10"
+  },
+  "DUPLADO FASE 2": {
+    "name": "DUPLADO FASE 2",
+    "created_at": "2026-04-30 13:11:20"
+  }
+}

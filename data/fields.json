@@ -1,0 +1,302 @@
+{
+  "CADASTRO": {
+    "FUNÇÃO": {
+      "name": "FUNÇÃO",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-03 22:20:20"
+    },
+    "ADMISSÃO": {
+      "name": "ADMISSÃO",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-03 22:20:42"
+    },
+    "GERENTE REGIONAL": {
+      "name": "GERENTE REGIONAL",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-03 22:33:57"
+    },
+    "GERENTE CORPORATIVO": {
+      "name": "GERENTE CORPORATIVO",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-03 22:34:09"
+    }
+  },
+  "INTEGRAÇÃO": {
+    "MODALIDADE": {
+      "name": "MODALIDADE",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-03 22:21:58"
+    },
+    "LOCAL": {
+      "name": "LOCAL",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-03 22:23:02"
+    },
+    "DATA INÍCIO": {
+      "name": "DATA INÍCIO",
+      "type": "date",
+      "required": false,
+      "created_at": "2026-03-03 22:22:27"
+    },
+    "DATA TÉRMINO": {
+      "name": "DATA TÉRMINO",
+      "type": "data",
+      "required": false,
+      "created_at": "2026-03-03 22:22:42"
+    },
+    "INSTRUTOR": {
+      "name": "INSTRUTOR",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-03 22:22:52"
+    }
+  },
+  "1ª RETIRADA - CARREGAMENTO": {
+    "LOCAL": {
+      "name": "LOCAL",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-04-30 16:00:13"
+    },
+    "DATA DE CARREGAMENTO": {
+      "name": "DATA DE CARREGAMENTO",
+      "type": "text",
+      "required": false,
+      "created_at": "2026-04-30 15:59:52"
+    }
+  },
+  "INTRODUÇÃO A SAÚDE E SEGURANÇA DO TRABALHO": {
+    "MODALIDADE": {
+      "name": "MODALIDADE",
+      "type": "text",
+      "required": false,
+      "created_at": "2026-03-03 22:53:09"
+    },
+    "LOCAL": {
+      "name": "LOCAL",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-03 22:53:16"
+    },
+    "DATA INÍCIO": {
+      "name": "DATA INÍCIO",
+      "type": "data",
+      "required": false,
+      "created_at": "2026-03-03 22:53:25"
+    },
+    "DATA TÉRMINO": {
+      "name": "DATA TÉRMINO",
+      "type": "text",
+      "required": false,
+      "created_at": "2026-03-03 22:53:38"
+    },
+    "INSTRUTOR": {
+      "name": "INSTRUTOR",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-03 22:53:49"
+    }
+  },
+  "NORMATIVO (ONLINE)": {
+    "DATA INÍCIO": {
+      "name": "DATA INÍCIO",
+      "type": "data",
+      "required": false,
+      "created_at": "2026-03-04 14:33:58"
+    },
+    "DATA TÉRMINO": {
+      "name": "DATA TÉRMINO",
+      "type": "data",
+      "required": false,
+      "created_at": "2026-03-04 14:34:10"
+    },
+    "INSTRUTOR": {
+      "name": "INSTRUTOR",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-04 14:34:21"
+    },
+    "ACESSO": {
+      "name": "ACESSO",
+      "type": "link",
+      "required": false,
+      "created_at": "2026-03-04 14:32:49"
+    }
+  },
+  "NORMATIVO (PRESENCIAL)": {
+    "LOCAL": {
+      "name": "LOCAL",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-03 22:24:21"
+    },
+    "DATA INÍCIO": {
+      "name": "DATA INÍCIO",
+      "type": "data",
+      "required": false,
+      "created_at": "2026-03-03 22:24:36"
+    },
+    "DATA TÉRMINO": {
+      "name": "DATA TÉRMINO",
+      "type": "data",
+      "required": false,
+      "created_at": "2026-03-03 22:24:55"
+    },
+    "INSTRUTOR": {
+      "name": "INSTRUTOR",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-03 22:25:16"
+    }
+  },
+  "2ª RETIRADA - CARREGAMENTO": {
+    "DATA DE CARREGAMENTO": {
+      "name": "DATA DE CARREGAMENTO",
+      "type": "date",
+      "required": false,
+      "created_at": "2026-03-03 22:27:38"
+    },
+    "LOCAL": {
+      "name": "LOCAL",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-31 10:45:41"
+    }
+  },
+  "OPERAÇÃO": {
+    "DATA DE OPERAÇÃO": {
+      "name": "DATA DE OPERAÇÃO",
+      "type": "data",
+      "required": false,
+      "created_at": "2026-03-03 22:33:19"
+    },
+    "LOCAL": {
+      "name": "LOCAL",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-27 18:00:16"
+    }
+  },
+  "CURSO TÉCNICO": {
+    "MODALIDADE": {
+      "name": "MODALIDADE",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-03 22:25:53"
+    },
+    "LOCAL": {
+      "name": "LOCAL",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-03 22:26:02"
+    },
+    "DATA INÍCIO": {
+      "name": "DATA INÍCIO",
+      "type": "data",
+      "required": false,
+      "created_at": "2026-03-03 22:26:18"
+    },
+    "DATA TÉRMINO": {
+      "name": "DATA TÉRMINO",
+      "type": "data",
+      "required": false,
+      "created_at": "2026-03-03 22:26:51"
+    },
+    "INSTRUTOR": {
+      "name": "INSTRUTOR",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-03-03 22:27:00"
+    }
+  },
+  "DUPLADO": {
+    "DATA INÍCIO": {
+      "name": "DATA INÍCIO",
+      "type": "text",
+      "required": false,
+      "created_at": "2026-03-20 14:44:14"
+    },
+    "DATA TÉRMINO": {
+      "name": "DATA TÉRMINO",
+      "type": "text",
+      "required": false,
+      "created_at": "2026-03-20 14:44:40"
+    },
+    "GER. REGIONAL": {
+      "name": "GER. REGIONAL",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-04-30 13:13:09"
+    },
+    "LOCAL DE APRESENTAÇÃO": {
+      "name": "LOCAL DE APRESENTAÇÃO",
+      "type": "text",
+      "required": false,
+      "created_at": "2026-03-20 14:45:04"
+    }
+  },
+  "CURSO TÉCNICO RETORNO": {
+    "MODALIDADE": {
+      "name": "MODALIDADE",
+      "type": "text",
+      "required": false,
+      "created_at": "2026-04-30 13:09:48"
+    },
+    "LOCAL": {
+      "name": "LOCAL",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-04-30 13:09:27"
+    },
+    "DATA INÍCIO": {
+      "name": "DATA INÍCIO",
+      "type": "data",
+      "required": false,
+      "created_at": "2026-04-30 13:08:35"
+    },
+    "INSTRUTOR": {
+      "name": "INSTRUTOR",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-04-30 13:10:55"
+    },
+    "DATA TÉRMINO": {
+      "name": "DATA TÉRMINO",
+      "type": "text",
+      "required": false,
+      "created_at": "2026-04-30 13:08:47"
+    }
+  },
+  "DUPLADO FASE 2": {
+    "DATA INÍCIO": {
+      "name": "DATA INÍCIO",
+      "type": "data",
+      "required": false,
+      "created_at": "2026-04-30 13:12:08"
+    },
+    "DATA TÉRMINO": {
+      "name": "DATA TÉRMINO",
+      "type": "data",
+      "required": false,
+      "created_at": "2026-04-30 13:12:26"
+    },
+    "GER. REGIONAL": {
+      "name": "GER. REGIONAL",
+      "type": "texto",
+      "required": false,
+      "created_at": "2026-04-30 13:13:45"
+    },
+    "LOCAL DE APRESENTAÇÃO": {
+      "name": "LOCAL DE APRESENTAÇÃO",
+      "type": "text",
+      "required": false,
+      "created_at": "2026-04-30 13:11:53"
+    }
+  }
+}

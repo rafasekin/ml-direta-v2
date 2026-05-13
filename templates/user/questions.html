@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dúvidas - ML Direta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('user_dashboard') }}">
+                <i class="fas fa-graduation-cap"></i> ML Direta
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{{ url_for('user_dashboard') }}">
+                    <i class="fas fa-user"></i> Meus Dados
+                </a>
+                <a class="nav-link" href="{{ url_for('user_questions') }}">
+                    <i class="fas fa-question-circle"></i> Dúvidas
+                </a>
+                <a class="nav-link" href="{{ url_for('logout') }}">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1>
+            <i class="fas fa-question-circle"></i> Dúvidas e Perguntas
+        </h1>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-plus"></i> Enviar Nova Dúvida
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            <div class="mb-3">
+                                <label for="question_id" class="form-label">Selecione uma pergunta *</label>
+                                <select class="form-select" id="question_id" name="question_id" required>
+                                    <option value="">Selecione...</option>
+                                    {% for category, category_questions in questions.items() %}
+                                        <optgroup label="{{ category }}">
+                                            {% for question in category_questions %}
+                                                <option value="{{ loop.index0 }}-{{ category }}-{{ loop.index0 }}">
+                                                    {{ question.text }}
+                                                </option>
+                                            {% endfor %}
+                                        </optgroup>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div id="complement_field" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="complement" class="form-label">Complemento (opcional)</label>
+                                    <textarea class="form-control" id="complement" name="complement" rows="3" 
+                                              placeholder="Adicione mais detalhes sobre sua dúvida..."></textarea>
+                                </div>
+                            </div>
+                            
+                            <input type="hidden" id="question_text" name="question_text">
+                            
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Enviar Dúvida
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-history"></i> Minhas Dúvidas
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if user_answers %}
+                            {% for answer in user_answers.values() %}
+                                <div class="card border-left-{% if answer.resposta %}success{% else %}warning{% endif %} mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h6 class="mb-1">{{ answer.question_text }}</h6>
+                                                <small class="text-muted">{{ answer.data_pergunta | format_datetime }}</small>
+                                            </div>
+                                            {% if answer.resposta %}
+                                                <span class="badge bg-success">Respondida</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Pendente</span>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        {% if answer.complement %}
+                                            <p class="mb-2">
+                                                <strong>Seu complemento:</strong> {{ answer.complement }}
+                                            </p>
+                                        {% endif %}
+                                        
+                                        {% if answer.resposta %}
+                                            <div class="alert alert-success">
+                                                <strong>Resposta:</strong> {{ answer.resposta }}
+                                                <br>
+                                                <small class="text-muted">{{ answer.data_resposta | format_datetime }}</small>
+                                            </div>
+                                        {% else %}
+                                            <div class="alert alert-warning">
+                                                <i class="fas fa-clock"></i> Aguardando resposta da equipe...
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center text-muted py-3">
+                                <i class="fas fa-inbox fa-2x mb-2"></i>
+                                <p>Você ainda não enviou nenhuma dúvida</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionSelect = document.getElementById('question_id');
+            const complementField = document.getElementById('complement_field');
+            const questionText = document.getElementById('question_text');
+            
+            // Dados das perguntas (gerados pelo servidor)
+            const questionsData = {{ questions | tojson | safe }};
+            
+            questionSelect.addEventListener('change', function() {
+                const value = this.value;
+                if (value) {
+                    const parts = value.split('-');
+                    const category = parts[1];
+                    const index = parseInt(parts[2]);
+                    
+                    if (questionsData[category] && questionsData[category][index]) {
+                        const question = questionsData[category][index];
+                        questionText.value = question.text;
+                        
+                        if (question.allows_text) {
+                            complementField.style.display = 'block';
+                        } else {
+                            complementField.style.display = 'none';
+                            document.getElementById('complement').value = '';
+                        }
+                    }
+                } else {
+                    questionText.value = '';
+                    complementField.style.display = 'none';
+                    document.getElementById('complement').value = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

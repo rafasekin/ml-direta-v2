@@ -1,0 +1,38 @@
+ML DIRETA - INSTRUCOES RAPIDAS
+================================
+
+COMO USAR:
+
+1. Via Terminal (Recomendado):
+   - Abra o terminal nesta pasta
+   - Digite: python start.py
+   - Aguarde e acesse: http://localhost:3000
+
+2. Via Duplo Clique (Windows):
+   - Dê duplo clique no arquivo: iniciar.bat
+   - Aguarde e acesse: http://localhost:3000
+
+ACESSO PADRAO:
+   Login: RafaelPinho
+   Senha: @21314100
+
+ENDERECO DO SISTEMA:
+   http://localhost:3000
+
+IMPORTANTE:
+   - Mantenha esta pasta intacta
+   - Os dados sao salvos localmente
+   - Funciona offline
+   - Use apenas a porta 3000
+
+PARAJAR O SISTEMA:
+   - Feche a janela do terminal
+   - Ou pressione Ctrl+C no terminal
+
+DUVIDAS:
+   - Verifique o arquivo README.md para detalhes
+   - Use python start.py --help para ajuda
+
+REQUISITOS:
+   - Python 3.7 ou superior
+   - Porta 3000 livre

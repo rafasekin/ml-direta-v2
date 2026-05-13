@@ -1,0 +1,387 @@
+{% extends "base.html" %}
+
+{% block title %}Usuários - Cronograma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>
+                <i class="fas fa-users"></i> Usuários Cadastrados
+            </h1>
+            <a href="{{ url_for('admin_user_form') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Novo Usuário
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Abas de Navegação -->
+<div class="card mb-4">
+    <div class="card-body">
+        <ul class="nav nav-tabs" id="userTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="all-users-tab" data-bs-toggle="tab" data-bs-target="#all-users" type="button" role="tab" aria-controls="all-users" aria-selected="true">
+                    <i class="fas fa-users"></i> Todos os Usuários
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="admin-users-tab" data-bs-toggle="tab" data-bs-target="#admin-users" type="button" role="tab" aria-controls="admin-users" aria-selected="false">
+                    <i class="fas fa-user-shield"></i> Administradores
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="normal-users-tab" data-bs-toggle="tab" data-bs-target="#normal-users" type="button" role="tab" aria-controls="normal-users" aria-selected="false">
+                    <i class="fas fa-user"></i> Usuários Comuns
+                </button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Conteúdo das Abas -->
+<div class="tab-content" id="userTabsContent">
+    <!-- Aba Todos os Usuários -->
+    <div class="tab-pane fade show active" id="all-users" role="tabpanel" aria-labelledby="all-users-tab">
+        <!-- Filtros -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" name="search" placeholder="Buscar por nome ou matrícula" value="{{ request.args.get('search', '') }}">
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" name="tipo">
+                            <option value="">Todos os tipos</option>
+                            <option value="admin" {% if request.args.get('tipo') == 'admin' %}selected{% endif %}>Administradores</option>
+                            <option value="usuario" {% if request.args.get('tipo') == 'usuario' %}selected{% endif %}>Usuários</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="fas fa-search"></i> Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Upload em Massa -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-upload"></i> Upload em Massa
+                </h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <a href="{{ url_for('admin_upload') }}" class="btn btn-success">
+                            <i class="fas fa-file-excel"></i> Upload de Usuários
+                        </a>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <a href="{{ url_for('admin_download_template') }}" class="btn btn-outline-success">
+                            <i class="fas fa-download"></i> Baixar Modelo Excel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Usuários -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAllAll">
+                                </th>
+                                <th>Nome</th>
+                                <th>Login</th>
+                                <th>Matrícula</th>
+                                <th>Tipo</th>
+                                <th>Tempo de Exibição</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user_id, user in users.items() %}
+                                {% set search_term = request.args.get('search', '')|lower %}
+                                {% set tipo_filter = request.args.get('tipo', '') %}
+                                
+                                {% if search_term == '' or search_term in user.nome_completo|lower or search_term in user.matricula|lower %}
+                                    {% if tipo_filter == '' or tipo_filter == user.tipo %}
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" class="userCheckboxAll" value="{{ user_id }}">
+                                            </td>
+                                            <td>{{ user.nome_completo }}</td>
+                                            <td>{{ user.login }}</td>
+                                            <td>{{ user.matricula }}</td>
+                                            <td>
+                                                {% if user.tipo == 'admin' %}
+                                                    <span class="badge bg-danger">Administrador</span>
+                                                {% else %}
+                                                    <span class="badge bg-primary">Usuário</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ user.tempo_exibicao | format_date }}</td>
+                                            <td>
+                                                {% if user.get('ativo', True) %}
+                                                    <span class="badge bg-success">Ativo</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Inativo</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ url_for('admin_user_edit', user_id=user.id) }}" class="btn btn-outline-primary">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <form method="POST" action="{{ url_for('admin_user_delete', user_id=user.id) }}" style="display: inline;">
+                                                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir este usuário?')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ações em Massa -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <span id="selectedCountAll">0 usuários selecionados</span>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button class="btn btn-danger" id="deleteSelectedAll" disabled>
+                            <i class="fas fa-trash"></i> Excluir Selecionados
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aba Administradores -->
+    <div class="tab-pane fade" id="admin-users" role="tabpanel" aria-labelledby="admin-users-tab">
+        <!-- Lista de Administradores -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAllAdmin">
+                                </th>
+                                <th>Nome</th>
+                                <th>Login</th>
+                                <th>Matrícula</th>
+                                <th>Tempo de Exibição</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user_id, user in users.items() %}
+                                {% if user.tipo == 'admin' %}
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="userCheckboxAdmin" value="{{ user_id }}">
+                                        </td>
+                                        <td>{{ user.nome_completo }}</td>
+                                        <td>{{ user.login }}</td>
+                                        <td>{{ user.matricula }}</td>
+                                        <td>{{ user.tempo_exibicao | format_date }}</td>
+                                        <td>
+                                            {% if user.get('ativo', True) %}
+                                                <span class="badge bg-success">Ativo</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inativo</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('admin_user_edit', user_id=user.id) }}" class="btn btn-outline-primary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form method="POST" action="{{ url_for('admin_user_delete', user_id=user.id) }}" style="display: inline;">
+                                                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir este administrador?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ações em Massa -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <span id="selectedCountAdmin">0 administradores selecionados</span>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button class="btn btn-danger" id="deleteSelectedAdmin" disabled>
+                            <i class="fas fa-trash"></i> Excluir Selecionados
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aba Usuários Comuns -->
+    <div class="tab-pane fade" id="normal-users" role="tabpanel" aria-labelledby="normal-users-tab">
+        <!-- Lista de Usuários Comuns -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAllNormal">
+                                </th>
+                                <th>Nome</th>
+                                <th>Login</th>
+                                <th>Matrícula</th>
+                                <th>Tempo de Exibição</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user_id, user in users.items() %}
+                                {% if user.tipo == 'usuario' %}
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="userCheckboxNormal" value="{{ user_id }}">
+                                        </td>
+                                        <td>{{ user.nome_completo }}</td>
+                                        <td>{{ user.login }}</td>
+                                        <td>{{ user.matricula }}</td>
+                                        <td>{{ user.tempo_exibicao | format_date }}</td>
+                                        <td>
+                                            {% if user.get('ativo', True) %}
+                                                <span class="badge bg-success">Ativo</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inativo</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('admin_user_edit', user_id=user.id) }}" class="btn btn-outline-primary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form method="POST" action="{{ url_for('admin_user_delete', user_id=user.id) }}" style="display: inline;">
+                                                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir este usuário?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ações em Massa -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <span id="selectedCountNormal">0 usuários selecionados</span>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button class="btn btn-danger" id="deleteSelectedNormal" disabled>
+                            <i class="fas fa-trash"></i> Excluir Selecionados
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Função genérica para configurar checkboxes e exclusão
+    function setupTabCheckboxHandlers(prefix, label) {
+        const selectAll = document.getElementById(`selectAll${prefix}`);
+        const checkboxes = document.querySelectorAll(`.userCheckbox${prefix}`);
+        const deleteButton = document.getElementById(`deleteSelected${prefix}`);
+        const selectedCount = document.getElementById(`selectedCount${prefix}`);
+        
+        if (!selectAll || !deleteButton || !selectedCount) return;
+        
+        function updateSelectedCount() {
+            const checked = document.querySelectorAll(`.userCheckbox${prefix}:checked`);
+            selectedCount.textContent = `${checked.length} ${label.toLowerCase()} selecionados`;
+            deleteButton.disabled = checked.length === 0;
+        }
+        
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            updateSelectedCount();
+        });
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateSelectedCount);
+        });
+        
+        deleteButton.addEventListener('click', function() {
+            if (confirm(`Tem certeza que deseja excluir os ${label.toLowerCase()} selecionados?`)) {
+                const checked = document.querySelectorAll(`.userCheckbox${prefix}:checked`);
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/admin/users/delete_multiple';
+                
+                checked.forEach(checkbox => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'user_ids';
+                    input.value = checkbox.value;
+                    form.appendChild(input);
+                });
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+    
+    // Configurar handlers para cada aba
+    setupTabCheckboxHandlers('All', 'usuários');
+    setupTabCheckboxHandlers('Admin', 'administradores');
+    setupTabCheckboxHandlers('Normal', 'usuários');
+});
+</script>
+{% endblock %}

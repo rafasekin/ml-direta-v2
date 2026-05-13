@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}{% if edit %}Editar{% else %}Novo{% endif %} Usuário - Cronograma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-user-plus"></i> 
+            {% if edit %}Editar Usuário{% else %}Novo Usuário{% endif %}
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="nome_completo" class="form-label">
+                                    <i class="fas fa-user"></i> Nome Completo *
+                                </label>
+                                <input type="text" class="form-control" id="nome_completo" name="nome_completo" 
+                                       value="{{ user.nome_completo if edit else '' }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="login" class="form-label">
+                                    <i class="fas fa-id-badge"></i> Login *
+                                </label>
+                                <input type="text" class="form-control" id="login" name="login" 
+                                       value="{{ user.login if edit else '' }}" required 
+                                       {% if edit %}readonly{% endif %}>
+                                {% if edit %}
+                                <small class="text-muted">Login não pode ser alterado</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="matricula" class="form-label">
+                                    <i class="fas fa-hashtag"></i> Matrícula *
+                                </label>
+                                <input type="text" class="form-control" id="matricula" name="matricula" 
+                                       value="{{ user.matricula if edit else '' }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="tipo" class="form-label">
+                                    <i class="fas fa-user-tag"></i> Tipo de Usuário *
+                                </label>
+                                <select class="form-select" id="tipo" name="tipo" required>
+                                    <option value="usuario" {% if not edit or user.tipo == 'usuario' %}selected{% endif %}>Usuário</option>
+                                    <option value="admin" {% if edit and user.tipo == 'admin' %}selected{% endif %}>Administrador</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="tempo_exibicao" class="form-label">
+                                    <i class="fas fa-calendar"></i> Tempo de Exibição *
+                                </label>
+                                <input type="date" class="form-control" id="tempo_exibicao" name="tempo_exibicao" 
+                                       value="{{ user.tempo_exibicao if edit else '' }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="senha" class="form-label">
+                                    <i class="fas fa-lock"></i> Senha 
+                                    {% if edit %}
+                                    <small class="text-muted">(deixe em branco para manter atual)</small>
+                                    {% else %}
+                                    *
+                                    {% endif %}
+                                </label>
+                                <input type="password" class="form-control" id="senha" name="senha" 
+                                       {% if not edit %}required{% endif %}>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="confirmar_senha" class="form-label">
+                                    <i class="fas fa-lock"></i> Confirmar Senha
+                                </label>
+                                <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Campos Adicionais Dinâmicos -->
+                    {% if fields %}
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-tags"></i> Campos Adicionais
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% for category, category_fields in fields.items() %}
+                                    {% if category_fields %}
+                                        <div class="mb-4">
+                                            <h6 class="text-primary">
+                                                <i class="fas fa-folder"></i> {{ category }}
+                                            </h6>
+                                            <div class="row">
+                                                {% for field_name, field_config in category_fields.items() %}
+                                                    <div class="col-md-4">
+                                                        <div class="mb-3">
+                                                            <label for="{{ category }}_{{ field_name }}" class="form-label">
+                                                                <i class="fas fa-tag"></i> {{ field_name }}
+                                                                {% if field_config.required %}
+                                                                    <span class="text-danger">*</span>
+                                                                {% endif %}
+                                                            </label>
+                                                            
+                                                            {% if field_config.type == 'text' %}
+                                                                <input type="text" class="form-control" 
+                                                                       {% set field_value = '' %}
+{% if edit and user.campos_adicionais[category] and field_name in user.campos_adicionais[category] %}
+    {% set field_value = user.campos_adicionais[category][field_name] %}
+    {% if 'DATA' in field_name or 'data' in field_name or 'ADMISSÃO' in field_name or 'admissão' in field_name or 'admissao' in field_name or 'CARREGAMENTO' in field_name or 'OPERAÇÃO' in field_name or 'operaçao' in field_name or 'operacao' in field_name or 'INÍCIO' in field_name or 'INICIO' in field_name or 'TÉRMINO' in field_name or 'TERMINO' in field_name %}
+        {% set field_value = field_value | format_date %}
+    {% endif %}
+{% endif %}
+                                                                       id="{{ category }}_{{ field_name }}" 
+                                                                       name="{{ category }}_{{ field_name }}" 
+                                                                       value="{{ field_value }}">
+                                                            
+                                                            {% elif field_config.type == 'date' %}
+                                                                {% set date_value = '' %}
+                                                                {% if edit and user.campos_adicionais[category] and field_name in user.campos_adicionais[category] %}
+                                                                    {% set date_value = user.campos_adicionais[category][field_name] | format_date %}
+                                                                {% endif %}
+                                                                <input type="date" class="form-control" 
+                                                                       id="{{ category }}_{{ field_name }}" 
+                                                                       name="{{ category }}_{{ field_name }}" 
+                                                                       value="{{ date_value }}">
+                                                            
+                                                            {% elif field_config.type == 'link' %}
+                                                                {% set link_value = '' %}
+                                                                {% if edit and user.campos_adicionais[category] and field_name in user.campos_adicionais[category] %}
+                                                                    {% set link_value = user.campos_adicionais[category][field_name] %}
+                                                                {% endif %}
+                                                                <input type="url" class="form-control" 
+                                                                       id="{{ category }}_{{ field_name }}" 
+                                                                       name="{{ category }}_{{ field_name }}" 
+                                                                       value="{{ link_value }}"
+                                                                       placeholder="https://exemplo.com">
+                                                            
+                                                            {% elif field_config.type == 'select' %}
+                                                                {% set select_value = '' %}
+                                                                {% if edit and user.campos_adicionais[category] and field_name in user.campos_adicionais[category] %}
+                                                                    {% set select_value = user.campos_adicionais[category][field_name] %}
+                                                                {% endif %}
+                                                                <select class="form-control" 
+                                                                        id="{{ category }}_{{ field_name }}" 
+                                                                        name="{{ category }}_{{ field_name }}">
+                                                                    <option value="">Selecione...</option>
+                                                                    <option value="Sim" {% if select_value == 'Sim' %}selected{% endif %}>Sim</option>
+                                                                    <option value="Não" {% if select_value == 'Não' %}selected{% endif %}>Não</option>
+                                                                </select>
+                                                            {% endif %}
+                                                            
+                                                            {% if field_config.type == 'link' and edit and user.campos_adicionais[category] and field_name in user.campos_adicionais[category] %}
+                                                                <small class="form-text text-muted">
+                                                                    <a href="{{ user.campos_adicionais[category][field_name] }}" target="_blank">
+                                                                        <i class="fas fa-external-link-alt"></i> Abrir link
+                                                                    </a>
+                                                                </small>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('admin_users') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Voltar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 
+                            {% if edit %}Atualizar{% else %}Cadastrar{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle"></i> Informações
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6>Campos Obrigatórios</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success"></i> Nome Completo</li>
+                    <li><i class="fas fa-check text-success"></i> Login (único)</li>
+                    <li><i class="fas fa-check text-success"></i> Matrícula</li>
+                    <li><i class="fas fa-check text-success"></i> Tipo de Usuário</li>
+                    <li><i class="fas fa-check text-success"></i> Tempo de Exibição</li>
+                    <li><i class="fas fa-check text-success"></i> Senha (apenas novos)</li>
+                </ul>
+                
+                <hr>
+                
+                <h6>Tipos de Usuário</h6>
+                <ul class="list-unstyled">
+                    <li><strong>Administrador:</strong> Acesso total ao sistema</li>
+                    <li><strong>Usuário:</strong> Acesso apenas aos próprios dados</li>
+                </ul>
+                
+                <hr>
+                
+                <h6>Tempo de Exibição</h6>
+                <p class="text-muted">
+                    Data limite em que o usuário poderá visualizar seus dados. 
+                    Após essa data, o usuário verá mensagem de tempo expirado.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const senha = document.getElementById('senha');
+    const confirmarSenha = document.getElementById('confirmar_senha');
+    
+    form.addEventListener('submit', function(e) {
+        if (senha.value && senha.value !== confirmarSenha.value) {
+            e.preventDefault();
+            alert('As senhas não coincidem!');
+            senha.focus();
+        }
+    });
+});
+</script>
+{% endblock %}

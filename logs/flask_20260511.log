@@ -1,0 +1,21 @@
+Carregado data\users.json em 0.396s
+Salvo data\users.json em 0.913s
+Senha do usuário de teste atualizada: testuser / test123
+Teste hash gerado: scrypt:32768:8:1$6zxKINkbDyXF7XAP$d7e92a90d7fee263...
+Verificação do hash: True
+[INFO] Administrador padrão já existe
+Carregado data\categories.json em 0.079s
+Carregado data\fields.json em 0.081s
+Carregado data\greetings.json em 0.095s
+Carregado data\questions.json em 0.051s
+Carregado data\answers.json em 0.051s
+ * Serving Flask app 'app'
+ * Debug mode: on
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:3000
+ * Running on http://192.168.15.152:3000
+Press CTRL+C to quit
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 119-877-265

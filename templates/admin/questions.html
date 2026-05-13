@@ -1,0 +1,712 @@
+{% extends "base.html" %}
+
+{% block title %}Perguntas e Dúvidas - Cronograma{% endblock %}
+
+{% block content %}
+<style>
+.category-section {
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.category-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.category-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.category-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.category-questions {
+    padding: 0.5rem;
+}
+
+.question-item {
+    border-left-width: 4px !important;
+    transition: all 0.2s ease;
+}
+
+.question-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.question-text {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: #495057;
+}
+
+.question-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+}
+
+.border-left-primary { border-left-color: #0d6efd !important; }
+.border-left-info { border-left-color: #0dcaf0 !important; }
+.border-left-success { border-left-color: #198754 !important; }
+.border-left-warning { border-left-color: #ffc107 !important; }
+.border-left-danger { border-left-color: #dc3545 !important; }
+.border-left-secondary { border-left-color: #6c757d !important; }
+
+.bg-opacity-10 { opacity: 0.1; }
+</style>
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>
+                <i class="fas fa-question-circle"></i> Perguntas e Dúvidas
+                {% if unanswered_count > 0 %}
+                    <span class="badge bg-danger ms-2">{{ unanswered_count }} não respondidas</span>
+                {% endif %}
+            </h1>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Configurar Perguntas -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-plus"></i> Configurar Perguntas
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin_question_add') }}">
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Categoria *</label>
+                        <input type="text" class="form-control" id="category" name="category" 
+                               placeholder="Ex: Geral, Gestão de Pessoas, Treinamento" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="question_text" class="form-label">Pergunta *</label>
+                        <textarea class="form-control" id="question_text" name="question_text" rows="2" 
+                                  placeholder="Ex: Como faço para solicitar férias?" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="allows_text" name="allows_text">
+                            <label class="form-check-label" for="allows_text">
+                                Permitir texto complementar
+                            </label>
+                        </div>
+                        <small class="text-muted">
+                            Se marcado, o usuário poderá adicionar comentários à pergunta
+                        </small>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Adicionar Pergunta
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Perguntas Configuradas -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-list"></i> Perguntas Configuradas
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if questions %}
+                    {% for category, category_questions in questions.items() %}
+                        <div class="category-section mb-4">
+                            <div class="category-header d-flex align-items-center mb-3">
+                                {% set category_icon = {
+                                    'CRONOGRAMA': 'fas fa-calendar-alt',
+                                    'GERAL': 'fas fa-info-circle',
+                                    'Gestão de Pessoas': 'fas fa-users',
+                                    'TREINAMENTO': 'fas fa-graduation-cap',
+                                    'TECNICO': 'fas fa-tools',
+                                    'ADMINISTRATIVO': 'fas fa-briefcase'
+                                } %}
+                                {% set category_color = {
+                                    'CRONOGRAMA': 'primary',
+                                    'GERAL': 'info',
+                                    'Gestão de Pessoas': 'success',
+                                    'TREINAMENTO': 'warning',
+                                    'TECNICO': 'danger',
+                                    'ADMINISTRATIVO': 'secondary'
+                                } %}
+                                
+                                {% set icon = category_icon.get(category, 'fas fa-folder') %}
+                                {% set color = category_color.get(category, 'primary') %}
+                                
+                                <div class="category-icon bg-{{ color }} text-white rounded-circle p-2 me-3">
+                                    <i class="{{ icon }}"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="category-title mb-0">{{ category }}</h5>
+                                    <small class="text-muted">{{ category_questions|length }} pergunta(s)</small>
+                                </div>
+                                <div class="category-actions">
+                                    <button class="btn btn-sm btn-outline-{{ color }}" 
+                                            onclick="addQuestionToCategory('{{ category }}')"
+                                            title="Adicionar pergunta a esta categoria">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="category-questions">
+                                {% for question in category_questions %}
+                                    <div class="question-item card border-left-{{ color }} mb-2">
+                                        <div class="card-body py-3">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div class="flex-grow-1">
+                                                    <div class="question-text">
+                                                        {{ question.text }}
+                                                    </div>
+                                                    <div class="question-meta mt-2">
+                                                        {% if question.allows_text %}
+                                                            <span class="badge bg-{{ color }} bg-opacity-10 text-{{ color }} me-2">
+                                                                <i class="fas fa-comment-alt me-1"></i>Permite texto
+                                                            </span>
+                                                        {% endif %}
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-clock me-1"></i>{{ question.created_at | format_datetime }}
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                                <div class="question-actions ms-3">
+                                                    <button class="btn btn-sm btn-outline-{{ color }} btn-icon" 
+                                                            onclick="editQuestion(this)"
+                                                            data-category="{{ category }}"
+                                                            data-index="{{ loop.index0 }}"
+                                                            data-text="{{ question.text | e }}"
+                                                            data-allows-text="{{ question.allows_text|lower }}"
+                                                            title="Editar pergunta">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger btn-icon" 
+                                                            onclick="deleteQuestion(this)"
+                                                            data-category="{{ category }}"
+                                                            data-index="{{ loop.index0 }}"
+                                                            title="Excluir pergunta">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-question-circle fa-3x mb-3 text-muted"></i>
+                        <h5>Nenhuma pergunta configurada ainda</h5>
+                        <p>Adicione sua primeira pergunta usando o formulário ao lado.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Responder Dúvidas -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-reply"></i> Responder Dúvidas
+                    {% if unanswered_count > 0 %}
+                        <span class="badge bg-warning ms-2">{{ unanswered_count }} pendente(s)</span>
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if users_answers %}
+                    {% for user_key, user_data in users_answers.items() %}
+                        <div class="user-questions-section mb-4">
+                            <!-- Cabeçalho do Usuário -->
+                            <div class="user-header d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
+                                <div>
+                                    <h6 class="mb-0 text-primary">
+                                        <i class="fas fa-user"></i> {{ user_data.user_name }}
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-id-card"></i> Matrícula: {{ user_data.user_matricula }}
+                                    </small>
+                                </div>
+                                <div>
+                                    <small class="text-muted">{{ user_data.answers|length }} dúvida(s)</small>
+                                    <button class="btn btn-sm btn-outline-primary ms-2" 
+                                            onclick="toggleUserQuestions('user_{{ loop.index0 }}')"
+                                            title="Expandir/Recolher">
+                                        <i class="fas fa-chevron-down" id="icon_user_{{ loop.index0 }}"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Perguntas do Usuário -->
+                            <div id="user_{{ loop.index0 }}" class="user-questions">
+                                {% for answer_item in user_data.answers[:3] %} <!-- Mostrar apenas as 3 mais recentes -->
+                                    <div class="card border-left-warning mb-2 {% if answer_item.answer.resposta %}answered{% else %}unanswered{% endif %}">
+                                        <div class="card-body py-2">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <div class="flex-grow-1">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock"></i> {{ answer_item.answer.data_pergunta | format_datetime }}
+                                                    </small>
+                                                </div>
+                                                {% if not answer_item.answer.resposta %}
+                                                    <span class="badge bg-warning">Pendente</span>
+                                                {% else %}
+                                                    <span class="badge bg-success">Respondida</span>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <p class="mb-2">
+                                                <strong>Pergunta:</strong> {{ answer_item.answer.question_text }}
+                                            </p>
+                                            
+                                            {% if answer_item.answer.complement %}
+                                                <p class="mb-2">
+                                                    <strong>Complemento:</strong> {{ answer_item.answer.complement }}
+                                                </p>
+                                            {% endif %}
+                                            
+                                            {% if answer_item.answer.resposta %}
+                                                <div class="answer-section mt-2 p-3 bg-success bg-opacity-25 rounded border border-success">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div class="flex-grow-1">
+                                                            <p class="mb-1 text-dark fw-semibold">
+                                                                <strong>Resposta:</strong> <span id="resposta_text_{{ answer_item.id }}">{{ answer_item.answer.resposta }}</span>
+                                                            </p>
+                                                            {% if answer_item.answer.comentario_admin %}
+                                                                <div class="mt-2 p-2 bg-warning bg-opacity-25 rounded border border-warning">
+                                                                    <p class="mb-1 text-dark fw-medium">
+                                                                        <strong><i class="fas fa-comment-dots"></i> Comentário Admin:</strong> 
+                                                                        <span id="comentario_text_{{ answer_item.id }}">{{ answer_item.answer.comentario_admin }}</span>
+                                                                    </p>
+                                                                </div>
+                                                            {% endif %}
+                                                            <small class="text-dark fw-medium">
+                                                                <i class="fas fa-check-circle text-success"></i> {{ answer_item.answer.data_resposta | format_datetime }}
+                                                            </small>
+                                                        </div>
+                                                        <div class="answer-actions ms-2">
+                                                            <button class="btn btn-sm btn-outline-primary mb-1" 
+                                                                    onclick="editAnswer('{{ answer_item.id }}')"
+                                                                    title="Editar resposta">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="btn btn-sm btn-outline-warning" 
+                                                                    onclick="toggleCommentForm('{{ answer_item.id }}')"
+                                                                    title="Adicionar comentário">
+                                                                <i class="fas fa-comment-plus"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Formulário de edição de resposta (oculto) -->
+                                                    <div id="edit_form_{{ answer_item.id }}" class="mt-2" style="display: none;">
+                                                        <form method="POST" action="{{ url_for('admin_edit_answer', answer_id=answer_item.id) }}">
+                                                            <div class="input-group input-group-sm">
+                                                                <input type="text" name="resposta" class="form-control" 
+                                                                       value="{{ answer_item.answer.resposta }}" required>
+                                                                <button type="submit" class="btn btn-sm btn-success">
+                                                                    <i class="fas fa-save"></i>
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm btn-secondary" 
+                                                                        onclick="cancelEditAnswer('{{ answer_item.id }}')">
+                                                                    <i class="fas fa-times"></i>
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    
+                                                    <!-- Formulário de comentário (oculto) -->
+                                                    <div id="comment_form_{{ answer_item.id }}" class="mt-2" style="display: none;">
+                                                        <form method="POST" action="{{ url_for('admin_add_comment', answer_id=answer_item.id) }}">
+                                                            <div class="input-group input-group-sm">
+                                                                <input type="text" name="comentario" class="form-control" 
+                                                                       placeholder="Adicionar comentário administrativo..." 
+                                                                       value="{{ answer_item.answer.comentario_admin or '' }}" required>
+                                                                <button type="submit" class="btn btn-sm btn-warning">
+                                                                    <i class="fas fa-save"></i>
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm btn-secondary" 
+                                                                        onclick="toggleCommentForm('{{ answer_item.id }}')">
+                                                                    <i class="fas fa-times"></i>
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <div class="mt-2">
+                                                    <form method="POST" action="{{ url_for('admin_answer', answer_id=answer_item.id) }}">
+                                                        <div class="input-group input-group-sm">
+                                                            <input type="text" name="resposta" class="form-control" 
+                                                                   placeholder="Digite sua resposta..." required>
+                                                            <button type="submit" class="btn btn-sm btn-success">
+                                                                <i class="fas fa-paper-plane"></i> Responder
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                
+                                {% if user_data.answers|length > 3 %}
+                                    <div class="text-center mt-2">
+                                        <button class="btn btn-sm btn-outline-secondary" 
+                                                onclick="showAllUserQuestions(this)"
+                                                data-user-key="{{ user_key | e }}"
+                                                data-user-index="{{ loop.index0 }}">>
+                                            <i class="fas fa-eye"></i> Exibir todas as dúvidas do colaborador
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <h6>Nenhuma dúvida recebida ainda</h6>
+                        <p class="small">Os usuários podem enviar dúvidas através do formulário de contato.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Histórico de Respostas -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-history"></i> Histórico de Respostas
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if answers %}
+                    {% for answer in answers.values() %}
+                        {% if answer.resposta %}
+                            <div class="card border-left-success mb-2">
+                                <div class="card-body py-2">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">{{ answer.user_name }}</h6>
+                                            <p class="mb-1 small">{{ answer.question_text }}</p>
+                                            {% if answer.complement %}
+                                                <p class="mb-1 small text-muted">{{ answer.complement }}</p>
+                                            {% endif %}
+                                            <p class="mb-0 small"><strong>Resposta:</strong> {{ answer.resposta }}</p>
+                                        </div>
+                                        <div class="text-end">
+                                            <small class="text-muted">{{ answer.data_resposta | format_datetime }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Edição de Pergunta -->
+<div class="modal fade" id="editQuestionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Pergunta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin_question_edit') }}">
+                <div class="modal-body">
+                    <input type="hidden" id="editCategory" name="category">
+                    <input type="hidden" id="editIndex" name="index">
+                    
+                    <div class="mb-3">
+                        <label for="editCategoryName" class="form-label">Categoria *</label>
+                        <input type="text" class="form-control" id="editCategoryName" name="new_category" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="editQuestionText" class="form-label">Pergunta *</label>
+                        <textarea class="form-control" id="editQuestionText" name="question_text" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="editAllowsText" name="allows_text">
+                            <label class="form-check-label" for="editAllowsText">
+                                Permitir resposta em texto
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editQuestion(button) {
+    const category = button.dataset.category;
+    const index = button.dataset.index;
+    const text = button.dataset.text;
+    const allowsText = button.dataset.allowsText === 'true';
+    
+    document.getElementById('editCategory').value = category;
+    document.getElementById('editIndex').value = index;
+    document.getElementById('editCategoryName').value = category;
+    document.getElementById('editQuestionText').value = text;
+    document.getElementById('editAllowsText').checked = allowsText;
+    
+    new bootstrap.Modal(document.getElementById('editQuestionModal')).show();
+}
+
+function deleteQuestion(button) {
+    const category = button.dataset.category;
+    const index = button.dataset.index;
+    
+    if (confirm('Tem certeza que deseja excluir esta pergunta? Esta ação não pode ser desfeita.')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url_for("admin_question_delete") }}';
+        
+        const categoryInput = document.createElement('input');
+        categoryInput.type = 'hidden';
+        categoryInput.name = 'category';
+        categoryInput.value = category;
+        
+        const indexInput = document.createElement('input');
+        indexInput.type = 'hidden';
+        indexInput.name = 'index';
+        indexInput.value = index;
+        
+        form.appendChild(categoryInput);
+        form.appendChild(indexInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function addQuestionToCategory(category) {
+    document.getElementById('category').value = category;
+    document.getElementById('question_text').focus();
+    
+    // Rolar até o formulário
+    document.getElementById('category').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    // Destacar o campo de categoria
+    const categoryField = document.getElementById('category');
+    categoryField.classList.add('border-success', 'border-2');
+    setTimeout(() => {
+        categoryField.classList.remove('border-success', 'border-2');
+    }, 2000);
+}
+
+function toggleUserQuestions(userId) {
+    const questionsDiv = document.getElementById(userId);
+    const icon = document.getElementById('icon_' + userId);
+    
+    if (questionsDiv.style.display === 'none') {
+        questionsDiv.style.display = 'block';
+        icon.classList.remove('fa-chevron-right');
+        icon.classList.add('fa-chevron-down');
+    } else {
+        questionsDiv.style.display = 'none';
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-right');
+    }
+}
+
+function showAllUserQuestions(button) {
+    const userKey = button.dataset.userKey;
+    const userIndex = button.dataset.userIndex;
+    
+    // Fazer requisição AJAX para obter todas as perguntas do usuário
+    fetch(`/admin/questions/user/${userKey}`)
+        .then(response => response.json())
+        .then(data => {
+            const questionsDiv = document.getElementById(`user_${userIndex}`);
+            const currentHtml = questionsDiv.innerHTML;
+            
+            // Adicionar todas as perguntas ocultas
+            let allQuestionsHtml = currentHtml;
+            for (let i = 3; i < data.answers.length; i++) {
+                const answer = data.answers[i].answer;
+                const answeredClass = answer.resposta ? 'answered' : 'unanswered';
+                const badgeClass = answer.resposta ? 'bg-success' : 'bg-warning';
+                const badgeText = answer.resposta ? 'Respondida' : 'Pendente';
+                
+                let answerHtml = '';
+                if (answer.resposta) {
+                    answerHtml = `
+                        <div class="answer-section mt-2 p-3 bg-success bg-opacity-25 rounded border border-success">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <p class="mb-1 text-dark fw-semibold">
+                                        <strong>Resposta:</strong> ${answer.resposta}
+                                    </p>
+                                    ${answer.comentario_admin ? `
+                                        <div class="mt-2 p-2 bg-warning bg-opacity-25 rounded border border-warning">
+                                            <p class="mb-1 text-dark fw-medium">
+                                                <strong><i class="fas fa-comment-dots"></i> Comentário Admin:</strong> ${answer.comentario_admin}
+                                            </p>
+                                        </div>
+                                    ` : ''}
+                                    <small class="text-dark fw-medium">
+                                        <i class="fas fa-check-circle text-success"></i> ${new Date(answer.data_resposta).toLocaleString('pt-BR')}
+                                    </small>
+                                </div>
+                                <div class="answer-actions ms-2">
+                                    <button class="btn btn-sm btn-outline-primary mb-1" 
+                                            onclick="editAnswer('${data.answers[i].id}')"
+                                            title="Editar resposta">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-warning" 
+                                            onclick="toggleCommentForm('${data.answers[i].id}')"
+                                            title="Adicionar comentário">
+                                        <i class="fas fa-comment-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    answerHtml = `
+                        <div class="mt-2">
+                            <form method="POST" action="/admin/answer/${data.answers[i].id}">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" name="resposta" class="form-control" 
+                                           placeholder="Digite sua resposta..." required>
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="fas fa-paper-plane"></i> Responder
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    `;
+                }
+                
+                allQuestionsHtml += `
+                    <div class="card border-left-warning mb-2 ${answeredClass}">
+                        <div class="card-body py-2">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="flex-grow-1">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock"></i> ${new Date(answer.data_pergunta).toLocaleString('pt-BR')}
+                                    </small>
+                                </div>
+                                <span class="badge ${badgeClass}">${badgeText}</span>
+                            </div>
+                            
+                            <p class="mb-2">
+                                <strong>Pergunta:</strong> ${answer.question_text}
+                            </p>
+                            
+                            ${answer.complement ? `
+                                <p class="mb-2">
+                                    <strong>Complemento:</strong> ${answer.complement}
+                                </p>
+                            ` : ''}
+                            
+                            ${answerHtml}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            questionsDiv.innerHTML = allQuestionsHtml;
+            
+            // Remover o botão "Exibir todas"
+            button.style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Erro ao carregar todas as perguntas:', error);
+            alert('Erro ao carregar todas as dúvidas do colaborador.');
+        });
+}
+
+function editAnswer(answerId) {
+    const editForm = document.getElementById(`edit_form_${answerId}`);
+    const commentForm = document.getElementById(`comment_form_${answerId}`);
+    
+    // Esconder formulário de comentário se estiver visível
+    if (commentForm) {
+        commentForm.style.display = 'none';
+    }
+    
+    // Mostrar/esconder formulário de edição
+    if (editForm.style.display === 'none') {
+        editForm.style.display = 'block';
+        // Focar no campo de edição
+        editForm.querySelector('input[name="resposta"]').focus();
+    } else {
+        editForm.style.display = 'none';
+    }
+}
+
+function cancelEditAnswer(answerId) {
+    const editForm = document.getElementById(`edit_form_${answerId}`);
+    editForm.style.display = 'none';
+}
+
+function toggleCommentForm(answerId) {
+    const commentForm = document.getElementById(`comment_form_${answerId}`);
+    const editForm = document.getElementById(`edit_form_${answerId}`);
+    
+    // Esconder formulário de edição se estiver visível
+    if (editForm) {
+        editForm.style.display = 'none';
+    }
+    
+    // Mostrar/esconder formulário de comentário
+    if (commentForm.style.display === 'none') {
+        commentForm.style.display = 'block';
+        // Focar no campo de comentário
+        commentForm.querySelector('input[name="comentario"]').focus();
+    } else {
+        commentForm.style.display = 'none';
+    }
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Dados - Cronograma</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .user-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .top-header {
+            background: #2c3e50;
+            padding: 0.5rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .top-header .nav-link {
+            color: white !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .top-header .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-1px);
+        }
+        
+        .main-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 0;
+        }
+        
+        .main-header .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .time-remaining {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .field-card {
+            border-left: 4px solid #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        /* Estilos Mobile */
+        @media (max-width: 768px) {
+            .user-card {
+                padding: 1.5rem 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .user-card h1 {
+                font-size: 1.5rem !important;
+            }
+            
+            .time-remaining {
+                font-size: 1rem;
+            }
+            
+            .field-card {
+                margin-bottom: 0.75rem;
+                border-left-width: 3px;
+            }
+            
+            .card-body {
+                padding: 1rem !important;
+            }
+            
+            .card-title {
+                font-size: 1rem !important;
+            }
+            
+            .row.mb-2 {
+                margin-bottom: 0.5rem !important;
+            }
+            
+            .col-md-4, .col-md-8 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+            
+            .col-md-4 {
+                font-weight: bold;
+                margin-bottom: 0.25rem;
+            }
+            
+            .col-md-8 {
+                margin-bottom: 0.75rem;
+            }
+            
+            .btn-sm {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
+            .d-flex.gap-2 {
+                flex-direction: column;
+                gap: 0.5rem !important;
+            }
+            
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
+            
+            .navbar-nav .nav-link {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.9rem;
+            }
+            
+            h3 {
+                font-size: 1.25rem;
+            }
+            
+            .badge {
+                font-size: 0.7rem;
+            }
+        }
+        
+        /* Navegação Mobile */
+        .mobile-nav {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-nav {
+                display: block;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: white;
+                border-top: 1px solid #dee2e6;
+                padding: 0.5rem 0;
+                z-index: 1000;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            }
+            
+            .mobile-nav .nav-item {
+                flex: 1;
+                text-align: center;
+            }
+            
+            .mobile-nav .nav-link {
+                color: #6c757d;
+                padding: 0.5rem;
+                font-size: 0.8rem;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .mobile-nav .nav-link.active {
+                color: #0d6efd;
+            }
+            
+            .mobile-nav .nav-link i {
+                font-size: 1.2rem;
+                margin-bottom: 0.25rem;
+            }
+            
+            body {
+                padding-bottom: 80px;
+            }
+            
+            .desktop-nav {
+                display: none !important;
+            }
+        }
+        
+        /* Cards de Ação Rápida */
+        .quick-action-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e9ecef;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        
+        .quick-action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .quick-action-card i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Destaque para cards do cronograma dentro da data */
+        .schedule-highlight {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: 2px solid #1e7e34;
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        .schedule-highlight .card-title {
+            color: white !important;
+        }
+        
+        .schedule-highlight .badge {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            color: #1e7e34 !important;
+        }
+        
+        .schedule-highlight small {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        .schedule-highlight strong {
+            color: white !important;
+        }
+        
+        /* Destaque para próxima fase */
+        .schedule-next {
+            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+            color: #212529;
+            border: 2px solid #e0a800;
+            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3);
+        }
+        
+        .schedule-next .card-title {
+            color: #212529 !important;
+        }
+        
+        .schedule-next .badge {
+            background-color: rgba(33, 37, 41, 0.9) !important;
+            color: #ffc107 !important;
+        }
+        
+        .schedule-next small {
+            color: rgba(33, 37, 41, 0.8) !important;
+        }
+        
+        .schedule-next strong {
+            color: #212529 !important;
+        }
+        
+        /* Status badges */
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+        
+        .status-atual {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .status-proxima {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .status-concluida {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .status-pendente {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3); }
+            50% { box-shadow: 0 8px 35px rgba(40, 167, 69, 0.5); }
+            100% { box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3); }
+        }
+        
+        /* Barra de Progresso */
+        .progress-container {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .progress-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .progress-percentage {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .progress-dates {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress {
+            height: 25px;
+            background-color: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            transition: width 0.6s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.85rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        @media (max-width: 768px) {
+            .progress-container {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .progress-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .progress-title {
+                font-size: 1rem;
+            }
+            
+            .progress-percentage {
+                font-size: 1rem;
+            }
+            
+            .progress {
+                height: 20px;
+            }
+            
+            .progress-bar {
+                font-size: 0.75rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .quick-action-card {
+                padding: 0.75rem;
+                text-align: center;
+            }
+            
+            .quick-action-card i {
+                font-size: 1.5rem;
+            }
+            
+            .quick-action-card h6 {
+                font-size: 0.9rem;
+                margin-bottom: 0;
+            }
+        }
+        
+        /* Ícones Animados por Categoria */
+        .category-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        /* INTEGRAÇÃO - Ícone de conexão/network */
+        .icon-integracao {
+            color: #007bff;
+            animation: pulse-blue 2s infinite;
+        }
+        
+        @keyframes pulse-blue {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        /* INTRODUÇÃO A SAÚDE E SEGURANÇA DO TRABALHO - Ícone de saúde */
+        .icon-saude {
+            color: #28a745;
+            animation: heartbeat 1.5s infinite;
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.05); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.05); }
+        }
+        
+        /* NORMATIVO (ONLINE) - Ícone de computador */
+        .icon-normativo-online {
+            color: #6f42c1;
+            animation: float 3s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        /* NORMATIVO (PRESENCIAL) - Ícone de prédio/local */
+        .icon-normativo-presencial {
+            color: #fd7e14;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        /* CURSO TÉCNICO - Ícone de graduação/educação */
+        .icon-curso-tecnico {
+            color: #20c997;
+            animation: rotate 4s infinite linear;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* CARREGAMENTO - Ícone de carga/peso */
+        .icon-carregamento {
+            color: #dc3545;
+            animation: weight 2s infinite ease-in-out;
+        }
+        
+        @keyframes weight {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        
+        /* OPERAÇÃO - Ícone de engrenagem */
+        .icon-operacao {
+            color: #6610f2;
+            animation: spin 3s infinite linear;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* DUPLADO - Ícone de cópia/duplicação */
+        .icon-duplicado {
+            color: #17a2b8;
+            animation: duplicate 2s infinite;
+        }
+        
+        @keyframes duplicate {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        /* CURSO TÉCNICO RETORNO - Ícone de retorno/refresh */
+        .icon-curso-retorno {
+            color: #e83e8c;
+            animation: refresh 2.5s infinite linear;
+        }
+        
+        @keyframes refresh {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* DUPLADO FASE 2 - Ícone de nível/estágio */
+        .icon-duplicado-fase2 {
+            color: #6c757d;
+            animation: level-up 3s infinite;
+        }
+        
+        @keyframes level-up {
+            0%, 100% { transform: translateY(0); }
+            25% { transform: translateY(-3px); }
+            75% { transform: translateY(3px); }
+        }
+        
+        /* Efeitos hover nos ícones */
+        .card:hover .category-icon {
+            transform: scale(1.2);
+            filter: brightness(1.2);
+        }
+        
+        /* Animações específicas para cards destacados */
+        .schedule-highlight .category-icon {
+            animation: pulse-highlight 1s infinite;
+            filter: brightness(1.3);
+        }
+        
+        @keyframes pulse-highlight {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.9; }
+        }
+        
+        .schedule-next .category-icon {
+            animation: pulse-next 1.5s infinite;
+            filter: brightness(1.2);
+        }
+        
+        @keyframes pulse-next {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.85; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho Superior Pequeno -->
+    <header class="top-header">
+        <div class="container">
+            <div class="d-flex justify-content-end align-items-center">
+                <nav class="nav">
+                    <a class="nav-link" href="{{ url_for('user_questions') }}" title="Dúvidas">
+                        <i class="fas fa-question-circle"></i>
+                        <span class="d-none d-md-inline ms-1">Dúvidas</span>
+                    </a>
+                    <a class="nav-link" href="{{ url_for('logout') }}" title="Sair">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="d-none d-md-inline ms-1">Sair</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Cabeçalho Principal -->
+    <header class="main-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a class="navbar-brand text-white" href="{{ url_for('user_dashboard') }}">
+                    <i class="fas fa-graduation-cap"></i> Cronograma
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navegação Mobile -->
+    <nav class="mobile-nav">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col">
+                    <a href="{{ url_for('user_dashboard') }}" class="nav-link active">
+                        <i class="fas fa-home"></i>
+                        <span>Início</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="user-card">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1>
+                        <i class="fas fa-user-circle"></i> 
+                        {{ user.nome_completo }}
+                    </h1>
+                    <p class="mb-1">
+                        <i class="fas fa-id-badge"></i> Matrícula: {{ user.matricula }}
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-calendar"></i> 
+                        Data de Cadastro: {{ user.data_cadastro | format_datetime }}
+                    </p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="time-remaining">
+                        <i class="fas fa-clock"></i>
+                        <div>Faltam {{ dias_restantes }} dias</div>
+                        <small>para expiração</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de Progresso Geral -->
+        {% if data_admissao and data_operacao %}
+            <div class="progress-container">
+                <div class="progress-header">
+                    <h5 class="progress-title">
+                        <i class="fas fa-chart-line"></i> Seu Progresso Geral
+                    </h5>
+                    <div class="progress-percentage">{{ "%.1f"|format(progresso_percentual) }}%</div>
+                </div>
+                <div class="progress-dates">
+                    <i class="fas fa-calendar-alt"></i> 
+                    Período: {{ data_admissao.strftime('%d/%m/%Y') }} até {{ data_operacao.strftime('%d/%m/%Y') }}
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" style="width: {{ progresso_percentual }}%">
+                        {% if progresso_percentual >= 10 %}
+                            {{ "%.1f"|format(progresso_percentual) }}%
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="progress-info">
+                    <span><i class="fas fa-flag-checkered"></i> Admissão: {{ data_admissao.strftime('%d/%m/%Y') }}</span>
+                    <span><i class="fas fa-trophy"></i> Operação: {{ data_operacao.strftime('%d/%m/%Y') }}</span>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Dados Básicos -->
+                <div class="card field-card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-user"></i> Dados Pessoais
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Nome Completo:</strong> {{ user.nome_completo }}</p>
+                                <p><strong>Matrícula:</strong> {{ user.matricula }}</p>
+                                <p><strong>Login:</strong> {{ user.login }}</p>
+                                
+                                <!-- Campos do CADASTRO - FUNÇÃO E ADMISSÃO -->
+                                {% if user.campos_adicionais and user.campos_adicionais.CADASTRO %}
+                                    {% if user.campos_adicionais.CADASTRO.FUNÇÃO %}
+                                        <p><strong>Função:</strong> {{ user.campos_adicionais.CADASTRO.FUNÇÃO }}</p>
+                                    {% endif %}
+                                    {% if user.campos_adicionais.CADASTRO.ADMISSÃO %}
+                                        <p><strong>Admissão:</strong> {{ user.campos_adicionais.CADASTRO.ADMISSÃO | format_date }}</p>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Tempo de Exibição:</strong> {{ user.tempo_exibicao | format_date }}</p>
+                                
+                                <!-- Outros campos do CADASTRO -->
+                                {% if user.campos_adicionais and user.campos_adicionais.CADASTRO %}
+                                    {% if user.campos_adicionais.CADASTRO['GERENTE REGIONAL'] %}
+                                        <p><strong>Gerente Regional:</strong> {{ user.campos_adicionais.CADASTRO['GERENTE REGIONAL'] }}</p>
+                                    {% endif %}
+                                    {% if user.campos_adicionais.CADASTRO['GERENTE CORPORATIVO'] %}
+                                        <p><strong>Gerente Corporativo:</strong> {{ user.campos_adicionais.CADASTRO['GERENTE CORPORATIVO'] }}</p>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <!-- Campos Adicionais Detalhados com Ordenação e Destaque -->
+                {% if categorias_ordenadas %}
+                    <div class="row">
+                        {% for categoria in categorias_ordenadas %}
+                            {% if categoria.name != 'CADASTRO' %}
+                                {% set user_category_data = user.get('campos_adicionais', {}).get(categoria.name, {}) %}
+                                {% set has_data = user_category_data and user_category_data.items() | list | length > 0 %}
+                                {% set has_dates = categoria.data_inicio or categoria.data_termino %}
+                                
+                                {% if has_data or has_dates %}
+                                    <div class="col-12 mb-3">
+                                    <div class="card field-card {% if categoria.status == 'atual' %}schedule-highlight{% elif categoria.status == 'proxima' %}schedule-next{% else %}bg-light{% endif %}">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6 class="card-title mb-0 {% if categoria.status != 'atual' and categoria.status != 'proxima' %}text-dark{% endif %}">
+                                                    {% if categoria.name == 'INTEGRAÇÃO' %}
+                                                        <i class="fas fa-network-wired category-icon icon-integracao"></i>
+                                                    {% elif categoria.name == 'INTRODUÇÃO A SAÚDE E SEGURANÇA DO TRABALHO' %}
+                                                        <i class="fas fa-heartbeat category-icon icon-saude"></i>
+                                                    {% elif categoria.name == 'NORMATIVO (ONLINE)' %}
+                                                        <i class="fas fa-laptop category-icon icon-normativo-online"></i>
+                                                    {% elif categoria.name == 'NORMATIVO (PRESENCIAL)' %}
+                                                        <i class="fas fa-building category-icon icon-normativo-presencial"></i>
+                                                    {% elif categoria.name == 'CURSO TÉCNICO' %}
+                                                        <i class="fas fa-graduation-cap category-icon icon-curso-tecnico"></i>
+                                                    {% elif categoria.name == 'CARREGAMENTO' %}
+                                                        <i class="fas fa-weight category-icon icon-carregamento"></i>
+                                                    {% elif categoria.name == 'OPERAÇÃO' %}
+                                                        <i class="fas fa-cogs category-icon icon-operacao"></i>
+                                                    {% elif categoria.name == 'DUPLADO' %}
+                                                        <i class="fas fa-copy category-icon icon-duplicado"></i>
+                                                    {% elif categoria.name == 'CURSO TÉCNICO RETORNO' %}
+                                                        <i class="fas fa-sync-alt category-icon icon-curso-retorno"></i>
+                                                    {% elif categoria.name == 'DUPLADO FASE 2' %}
+                                                        <i class="fas fa-layer-group category-icon icon-duplicado-fase2"></i>
+                                                    {% else %}
+                                                        <i class="fas fa-folder category-icon"></i>
+                                                    {% endif %}
+                                                    {{ categoria.name }}
+                                                </h6>
+                                                <span class="status-badge status-{{ categoria.status }}">
+                                                    {% if categoria.status == 'atual' %}
+                                                        {% if categoria.data_termino %}
+                                                            {% set dias_restantes = (categoria.data_termino - today_date).days %}
+                                                            {% if dias_restantes > 0 %}
+                                                                {{ dias_restantes }} dias para finalizar
+                                                            {% elif dias_restantes == 0 %}
+                                                                Finaliza hoje
+                                                            {% else %}
+                                                                Vencido
+                                                            {% endif %}
+                                                        {% else %}
+                                                            ATUAL
+                                                        {% endif %}
+                                                    {% elif categoria.status == 'proxima' %}
+                                                        {% if categoria.data_inicio %}
+                                                            {% set dias_para_comecar = (categoria.data_inicio - today_date).days %}
+                                                            {% if dias_para_comecar > 0 %}
+                                                                {{ dias_para_comecar }} dias para iniciar
+                                                            {% elif dias_para_comecar == 0 %}
+                                                                Inicia hoje
+                                                            {% else %}
+                                                                Iniciou
+                                                            {% endif %}
+                                                        {% else %}
+                                                            PRÓXIMA
+                                                        {% endif %}
+                                                    {% elif categoria.status == 'concluida' %}
+                                                        CONCLUÍDA
+                                                    {% else %}
+                                                        PENDENTE
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                            
+                                            {% if categoria.data_inicio %}
+                                                <p class="mb-1 {% if categoria.status == 'atual' or categoria.status == 'proxima' %}text-white{% else %}text-muted{% endif %}">
+                                                    <small>
+                                                        <strong>Início:</strong> {{ categoria.data_inicio.strftime('%d/%m/%Y') }}
+                                                    </small>
+                                                </p>
+                                            {% endif %}
+                                            
+                                            {% if categoria.data_termino %}
+                                                <p class="mb-2 {% if categoria.status == 'atual' or categoria.status == 'proxima' %}text-white{% else %}text-muted{% endif %}">
+                                                    <small>
+                                                        <strong>Término:</strong> {{ categoria.data_termino.strftime('%d/%m/%Y') }}
+                                                    </small>
+                                                </p>
+                                            {% endif %}
+                                            
+                                            {% for field_name, field_value in user_category_data.items() %}
+                                                {% if field_value and not ('DATA INÍCIO' in field_name or 'DATA TÉRMINO' in field_name or 'DATA INICIO' in field_name or 'DATA TERMINO' in field_name or 'DATA TÉRMINIO' in field_name) %}
+                                                    <div class="row mb-2">
+                                                        <div class="col-md-4">
+                                                            <strong {% if categoria.status == 'atual' or categoria.status == 'proxima' %}class="text-white"{% endif %}>{{ field_name }}:</strong>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            {% set is_url = false %}
+                                                            {% set full_field_link = field_value %}
+                                                            
+                                                            {% if field_value.startswith('http://') or field_value.startswith('https://') %}
+                                                                {% set is_url = true %}
+                                                            {% elif '.' in field_value and ' ' not in field_value and '/' in field_value %}
+                                                                {% set is_url = true %}
+                                                                {% set full_field_link = 'https://' + field_value %}
+                                                            {% elif '.' in field_value and ' ' not in field_value and field_value.count('.') >= 2 %}
+                                                                {% set is_url = true %}
+                                                                {% set full_field_link = 'https://' + field_value %}
+                                                            {% endif %}
+                                                            
+                                                            {% if is_url %}
+                                                                <a href="{{ full_field_link }}" target="_blank" class="btn btn-sm {% if categoria.status == 'atual' or categoria.status == 'proxima' %}btn-outline-light{% else %}btn-outline-primary{% endif %}">
+                                                                    <i class="fas fa-external-link-alt"></i> Clique aqui para acessar
+                                                                </a>
+                                                            {% else %}
+                                                                {% if 'DATA' in field_name or 'data' in field_name or 'ADMISSÃO' in field_name or 'admissão' in field_name or 'admissao' in field_name or 'CARREGAMENTO' in field_name or 'OPERAÇÃO' in field_name or 'operaçao' in field_name or 'operacao' in field_name or 'INÍCIO' in field_name or 'INICIO' in field_name or 'TÉRMINO' in field_name or 'TERMINO' in field_name %}
+                                                                    <span {% if categoria.status == 'atual' or categoria.status == 'proxima' %}class="text-white"{% else %}class="text-muted"{% endif %}>{{ field_value | format_date }}</span>
+                                                                {% else %}
+                                                                    <span {% if categoria.status == 'atual' or categoria.status == 'proxima' %}class="text-white"{% else %}class="text-dark"{% endif %}>{{ field_value }}</span>
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            </div>
+    </div>
+
+    <!-- Popup de Status do Aluno -->
+    {% if fase_atual or proxima_fase %}
+    <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="statusModalLabel">
+                        <i class="fas fa-info-circle"></i> Seu Status Atual
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% if fase_atual %}
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                            <i class="fas fa-play-circle me-2"></i>
+                            <div>
+                                <strong>Fase Atual:</strong> {{ fase_atual.name }}
+                                {% if fase_atual.data_inicio %}
+                                    <br><small>Início: {{ fase_atual.data_inicio.strftime('%d/%m/%Y') }}</small>
+                                {% endif %}
+                                {% if fase_atual.data_termino %}
+                                    <br><small>Término: {{ fase_atual.data_termino.strftime('%d/%m/%Y') }}</small>
+                                {% endif %}
+                                {% if fase_atual.local %}
+                                    <br><small><i class="fas fa-map-marker-alt"></i> Local: {{ fase_atual.local }}</small>
+                                {% endif %}
+                                {% if fase_atual.instrutor %}
+                                    <br><small><i class="fas fa-user-tie"></i> Instrutor: {{ fase_atual.instrutor }}</small>
+                                {% endif %}
+                                {% if fase_atual.acesso %}
+                                    <br><small><i class="fas fa-link"></i> Acesso: <a href="{{ fase_atual.acesso }}" target="_blank" class="alert-link">Clique aqui</a></small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    {% if proxima_fase %}
+                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                            <i class="fas fa-calendar-plus me-2"></i>
+                            <div>
+                                <strong>Próxima Fase:</strong> {{ proxima_fase.name }}
+                                {% if proxima_fase.data_inicio %}
+                                    <br><small>Início: {{ proxima_fase.data_inicio.strftime('%d/%m/%Y') }}</small>
+                                {% endif %}
+                                {% if proxima_fase.data_termino %}
+                                    <br><small>Término: {{ proxima_fase.data_termino.strftime('%d/%m/%Y') }}</small>
+                                {% endif %}
+                                {% if proxima_fase.local %}
+                                    <br><small><i class="fas fa-map-marker-alt"></i> Local: {{ proxima_fase.local }}</small>
+                                {% endif %}
+                                {% if proxima_fase.instrutor %}
+                                    <br><small><i class="fas fa-user-tie"></i> Instrutor: {{ proxima_fase.instrutor }}</small>
+                                {% endif %}
+                                {% if proxima_fase.acesso %}
+                                    <br><small><i class="fas fa-link"></i> Acesso: <a href="{{ proxima_fase.acesso }}" target="_blank" class="alert-link">Clique aqui</a></small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mt-3">
+                        <p class="mb-0">
+                            <i class="fas fa-lightbulb text-warning"></i>
+                            <strong>Dica:</strong> Mantenha seus dados atualizados para acompanhar seu progresso no cronograma.
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                        <i class="fas fa-thumbs-up"></i> Entendido!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Mostrar popup automaticamente quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            var statusModal = new bootstrap.Modal(document.getElementById('statusModal'));
+            statusModal.show();
+        });
+    </script>
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

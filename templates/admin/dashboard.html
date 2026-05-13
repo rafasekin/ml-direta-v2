@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Administrativo - Cronograma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-tachometer-alt"></i> Dashboard Administrativo
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ admin_count }}</h4>
+                        <p class="mb-0">Administradores</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-user-shield fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('admin_users') }}" class="text-white text-decoration-none">
+                    Ver todos <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ user_count }}</h4>
+                        <p class="mb-0">Usuários</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('admin_users') }}" class="text-white text-decoration-none">
+                    Ver todos <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>
+                            {{ categories|length }}
+                        </h4>
+                        <p class="mb-0">Categorias</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-tags fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('admin_categories') }}" class="text-white text-decoration-none">
+                    Gerenciar <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ unanswered_count }}</h4>
+                        <p class="mb-0">Dúvidas não respondidas</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-question-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('admin_questions') }}" class="text-white text-decoration-none">
+                    Responder <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cog"></i> Ações Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('admin_user_form') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-user-plus"></i> Novo Usuário
+                    </a>
+                    <a href="{{ url_for('admin_categories') }}" class="btn btn-outline-info">
+                        <i class="fas fa-plus-circle"></i> Nova Categoria
+                    </a>
+                    <a href="{{ url_for('admin_greetings') }}" class="btn btn-outline-success">
+                        <i class="fas fa-hand-wave"></i> Editar Saudação
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line"></i> Estatísticas
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    <i class="fas fa-info-circle"></i> 
+                    Sistema operando na porta 3000
+                </p>
+                <p class="text-muted">
+                    <i class="fas fa-database"></i> 
+                    Armazenamento local em JSON
+                </p>
+                <p class="text-muted">
+                    <i class="fas fa-shield-alt"></i> 
+                    Acesso administrativo: RafaelPinho
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

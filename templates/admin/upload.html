@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Upload em Massa - ML Direta{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-upload"></i> Upload de Usuários em Massa
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-file-excel"></i> Upload de Arquivo Excel
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Selecione o arquivo Excel (.xlsx)</label>
+                        <input type="file" class="form-control" id="file" name="file" accept=".xlsx" required>
+                        <small class="text-muted">Apenas arquivos .xlsx são aceitos</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Upload *</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="upload_mode" id="update_mode" value="update" checked>
+                            <label class="form-check-label" for="update_mode">
+                                <strong>1. Atualizar Banco de Dados</strong>
+                                <br>
+                                <small class="text-muted">
+                                    • Atualiza apenas campos com informações<br>
+                                    • Campos em branco não são alterados<br>
+                                    • Mantém dados existentes
+                                </small>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="upload_mode" id="replace_mode" value="replace">
+                            <label class="form-check-label" for="replace_mode">
+                                <strong>2. Deletar e Substituir Todas as Informações</strong>
+                                <br>
+                                <small class="text-muted">
+                                    • Substitui todos os campos<br>
+                                    • Campos em branco serão limpos<br>
+                                    • Recria estrutura completa
+                                </small>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="ignore_empty" name="ignore_empty">
+                            <label class="form-check-label" for="ignore_empty">
+                                Ignorar campos em branco e continuar
+                            </label>
+                        </div>
+                        <small class="text-muted">
+                            Se marcado, o sistema continuará o processamento mesmo com campos vazios
+                        </small>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-upload"></i> Fazer Upload
+                    </button>
+                    
+                    <a href="{{ url_for('admin_users') }}" class="btn btn-secondary ms-2">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-download"></i> Modelo Excel
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    Baixe o modelo Excel com todos os campos configurados no sistema.
+                </p>
+                <a href="{{ url_for('admin_download_template') }}" class="btn btn-success w-100">
+                    <i class="fas fa-file-excel"></i> Baixar Modelo
+                </a>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle"></i> Informações
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6>Campos Obrigatórios</h6>
+                <ul class="list-unstyled small">
+                    <li><i class="fas fa-check text-success"></i> nome_completo</li>
+                    <li><i class="fas fa-check text-success"></i> login</li>
+                    <li><i class="fas fa-check text-success"></i> senha</li>
+                    <li><i class="fas fa-check text-success"></i> matricula</li>
+                    <li><i class="fas fa-check text-success"></i> tempo_exibicao</li>
+                </ul>
+                
+                <h6>Opções de Upload</h6>
+                <ul class="list-unstyled small">
+                    <li><i class="fas fa-edit text-primary"></i> <strong>Atualizar:</strong> Campos em branco não alteram dados existentes</li>
+                    <li><i class="fas fa-sync text-warning"></i> <strong>Substituir:</strong> Campos em branco limpam dados existentes</li>
+                </ul>
+                
+                <h6>Regras Gerais</h6>
+                <ul class="list-unstyled small">
+                    <li><i class="fas fa-arrow-right text-primary"></i> Matrícula identifica usuário</li>
+                    <li><i class="fas fa-arrow-right text-primary"></i> Matrícula existente = atualiza/substitui</li>
+                    <li><i class="fas fa-arrow-right text-primary"></i> Matrícula nova = cria usuário</li>
+                    <li><i class="fas fa-arrow-right text-primary"></i> Datas: formato DD/MM/AAAA</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Exemplo de Estrutura -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-table"></i> Estrutura do Arquivo
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>nome_completo</th>
+                                <th>login</th>
+                                <th>senha</th>
+                                <th>matricula</th>
+                                <th>tempo_exibicao</th>
+                                <th>campo_adicional_1</th>
+                                <th>campo_adicional_2</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>João Silva</td>
+                                <td>joao.silva</td>
+                                <td>123456</td>
+                                <td>EMP001</td>
+                                <td>2024-12-31</td>
+                                <td>Departamento A</td>
+                                <td>Presencial</td>
+                            </tr>
+                            <tr>
+                                <td>Maria Santos</td>
+                                <td>maria.santos</td>
+                                <td>senha123</td>
+                                <td>EMP002</td>
+                                <td>2024-11-30</td>
+                                <td>Departamento B</td>
+                                <td>Online</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-lightbulb"></i>
+                    <strong>Dica:</strong> O modelo Excel baixado já contém todos os campos configurados no sistema, incluindo os campos adicionais criados por você.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

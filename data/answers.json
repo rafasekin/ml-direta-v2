@@ -1,0 +1,45 @@
+{
+  "1": {
+    "user_id": "5",
+    "user_name": "FELIPE",
+    "question_id": "0-CRONOGRAMA-0",
+    "question_text": "ESTADO INCOMPATÍVEL COM MEU ENDEREÇO",
+    "complement": "Uykum",
+    "resposta": "isso",
+    "data_pergunta": "2026-03-04 12:37:42",
+    "data_resposta": "2026-03-04 13:16:06",
+    "user_matricula": "FELIPE"
+  },
+  "2": {
+    "user_id": "7",
+    "user_name": "GABRIELA SOARES DE AMORIM",
+    "user_matricula": "r035303",
+    "question_id": "0-CRONOGRAMA-0",
+    "question_text": "ESTADO INCOMPATÍVEL COM MEU ENDEREÇO",
+    "complement": "Moro em Belo Horizonte meu curso está como Vila Guilherme em SP",
+    "resposta": "Cronograma atualizado, por gentileza atualizar página.",
+    "data_pergunta": "2026-03-04 15:24:15",
+    "data_resposta": "2026-03-04 15:25:44"
+  },
+  "3": {
+    "user_id": "8",
+    "user_name": "VINICIUS DE SOUZA SANTOS",
+    "user_matricula": "r025220",
+    "question_id": "0-CRONOGRAMA-0",
+    "question_text": "ESTADO INCOMPATÍVEL COM MEU ENDEREÇO",
+    "complement": "Local diferente do meu estado.",
+    "resposta": "ok",
+    "data_pergunta": "2026-03-04 15:45:35",
+    "data_resposta": "2026-03-04 15:45:50"
+  },
+  "4": {
+    "user_id": "251",
+    "user_name": "THALES HENRIQUE CANDIDO RODRIGUES",
+    "user_matricula": "61092",
+    "question_id": "0-CRONOGRAMA-0",
+    "question_text": "ESTADO INCOMPATÍVEL COM MEU ENDEREÇO",
+    "complement": "Bom dia qual horario vai iniciar o trinamento de hoje 11/05?",
+    "resposta": null,
+    "data_pergunta": "2026-05-11 09:44:10"
+  }
+}

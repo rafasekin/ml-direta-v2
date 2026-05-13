@@ -1,0 +1,25 @@
+﻿[2026-04-24 07:37:53] [INFO] === SISTEMA DE BACKUP ML DIRETA ===
+[2026-04-24 07:37:54] [INFO] Iniciando processo de backup em 04/24/2026 07:37:54
+[2026-04-24 07:37:56] [INFO] EspaÃ§o livre no drive G: 69.81 GB
+[2026-04-24 07:37:56] [INFO] Iniciando backup do ML Direta
+[2026-04-24 07:37:56] [INFO] Criando backup: ML_Direta_Backup_2026-04-24_07-37.zip
+[2026-04-24 07:38:46] [ERROR] Erro durante compressÃ£o: Exceção ao chamar "CreateFromDirectory" com "2" argumento(s): "O processo não pode acessar o arquivo 'C:\Users\ICOMON\Documents\Ml direta\logs\cloudflared_20260422.log' porque ele está sendo usado por outro processo."
+[2026-04-24 07:38:46] [WARNING] Tentando mÃ©todo alternativo de compressÃ£o...
+[2026-04-24 07:40:00] [ERROR] Falha no mÃ©todo alternativo: Exceção ao chamar ".ctor" com "1" argumento(s): "O fluxo não era legível."
+[2026-04-24 07:40:00] [ERROR] Falha no backup automÃ¡tico
+[2026-04-24 17:08:21] [INFO] === SISTEMA DE BACKUP ML DIRETA ===
+[2026-04-24 17:08:21] [INFO] Iniciando processo de backup em 04/24/2026 17:08:21
+[2026-04-24 17:08:21] [INFO] EspaÃ§o livre no drive G: 69.8 GB
+[2026-04-24 17:08:21] [INFO] Iniciando backup do ML Direta
+[2026-04-24 17:08:22] [INFO] Verificando arquivos em uso...
+[2026-04-24 17:08:22] [INFO] Copiando arquivos para diretÃ³rio temporÃ¡rio...
+[2026-04-24 17:08:24] [WARNING] Arquivo bloqueado, pulando: 
+[2026-04-24 17:16:51] [INFO] Arquivos copiados: 7537, Pulados: 2
+[2026-04-24 17:16:51] [INFO] Compactando diretÃ³rio temporÃ¡rio...
+[2026-04-24 17:24:33] [SUCCESS] Backup criado com sucesso: ML_Direta_Backup_2026-04-24_17-08.zip (64.42 MB)
+[2026-04-24 17:24:33] [INFO] Limpando backups antigos (mais de 30 dias)
+[2026-04-24 17:24:33] [INFO] Nenhum backup antigo encontrado para remover
+[2026-04-24 17:24:33] [INFO] Verificando integridade do backup
+[2026-04-24 17:24:33] [SUCCESS] Backup verificado e vÃ¡lido
+[2026-04-24 17:24:34] [SUCCESS] Backup concluÃ­do com sucesso! Arquivo: G:\Meu Drive\SISTEMAS\MALA DIRETA\ML_Direta_Backup_2026-04-24_17-08.zip
+[2026-04-24 17:24:34] [SUCCESS] Backup automÃ¡tico concluÃ­do com sucesso!

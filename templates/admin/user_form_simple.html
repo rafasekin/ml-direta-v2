@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Usuário - Cronograma{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="fas fa-user-plus"></i> 
+                Editar Usuário
+            </h1>
+        </div>
+    </div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="nome_completo" class="form-label">
+                                    <i class="fas fa-user"></i> Nome Completo *
+                                </label>
+                                <input type="text" class="form-control" id="nome_completo" name="nome_completo" 
+                                       value="{{ user.nome_completo if edit else '' }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="login" class="form-label">
+                                    <i class="fas fa-id-badge"></i> Login *
+                                </label>
+                                <input type="text" class="form-control" id="login" name="login" 
+                                       value="{{ user.login if edit else '' }}" required 
+                                       {% if edit %}readonly{% endif %}>
+                                <small class="text-muted">Login não pode ser alterado</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="matricula" class="form-label">
+                                    <i class="fas fa-hashtag"></i> Matrícula *
+                                </label>
+                                <input type="text" class="form-control" id="matricula" name="matricula" 
+                                       value="{{ user.matricula if edit else '' }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="tipo" class="form-label">
+                                    <i class="fas fa-user-tag"></i> Tipo de Usuário *
+                                </label>
+                                <select class="form-select" id="tipo" name="tipo" required>
+                                    <option value="usuario" {% if not edit or user.tipo == 'usuario' %}selected{% endif %}>Usuário</option>
+                                    <option value="admin" {% if edit and user.tipo == 'admin' %}selected{% endif %}>Administrador</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="tempo_exibicao" class="form-label">
+                                    <i class="fas fa-calendar"></i> Tempo de Exibição *
+                                </label>
+                                {% set tempo_val = user.tempo_exibicao if edit and user.tempo_exibicao else '' %}
+                                {% if ' ' in tempo_val %}
+                                    {% set tempo_val = tempo_val.split(' ')[0] %}
+                                {% endif %}
+                                <input type="date" class="form-control" id="tempo_exibicao" name="tempo_exibicao" 
+                                       value="{{ tempo_val }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="senha" class="form-label">
+                                    <i class="fas fa-lock"></i> Senha 
+                                    {% if edit %}
+                                    <small class="text-muted">(deixe em branco para manter atual)</small>
+                                    {% else %}
+                                    *
+                                    {% endif %}
+                                </label>
+                                <input type="password" class="form-control" id="senha" name="senha" 
+                                       {% if not edit %}required{% endif %}>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="confirmar_senha" class="form-label">
+                                    <i class="fas fa-lock"></i> Confirmar Senha
+                                </label>
+                                <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Campos Adicionais -->
+                    {% if fields and user.campos_adicionais %}
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-tags"></i> Campos Adicionais
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                {% for category, category_fields in fields.items() %}
+                                    {% if category_fields %}
+                                        <div class="mb-4">
+                                            <h6 class="text-primary">
+                                                <i class="fas fa-folder"></i> {{ category }}
+                                            </h6>
+                                            <div class="row">
+                                                {% for field_name, field_config in category_fields.items() %}
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label for="{{ category }}_{{ field_name }}" class="form-label">
+                                                                <i class="fas fa-tag"></i> {{ field_name }}
+                                                                {% if field_config.required %}
+                                                                    <span class="text-danger">*</span>
+                                                                {% endif %}
+                                                            </label>
+                                                            {% set ftype = (field_config.type|string)|lower %}
+                                                            {% set current_value = '' %}
+                                                            {% if user.campos_adicionais and category in user.campos_adicionais and field_name in user.campos_adicionais[category] %}
+                                                                {% set current_value = user.campos_adicionais[category][field_name] %}
+                                                            {% endif %}
+                                                            {% set current_value_str = current_value|string %}
+                                                            {% set display_value = current_value_str %}
+                                                            
+                                                            <!-- Aplicar formatação de datas para campos text com palavras-chave de data -->
+                                                            {% if ftype in ['text', 'texto'] and ('DATA' in field_name or 'data' in field_name or 'ADMISSÃO' in field_name or 'admissão' in field_name or 'admissao' in field_name or 'CARREGAMENTO' in field_name or 'OPERAÇÃO' in field_name or 'operaçao' in field_name or 'operacao' in field_name or 'INÍCIO' in field_name or 'INICIO' in field_name or 'TÉRMINO' in field_name or 'TERMINO' in field_name) %}
+                                                                {% set date_val = current_value_str %}
+                                                                {% if ' ' in date_val %}
+                                                                    {% set date_val = date_val.split(' ')[0] %}
+                                                                {% endif %}
+                                                                {% if '-' in date_val %}
+                                                                    {% set parts = date_val.split('-') %}
+                                                                    {% set display_value = parts[2] + '/' + parts[1] + '/' + parts[0] %}
+                                                                {% else %}
+                                                                    {% set display_value = date_val %}
+                                                                {% endif %}
+                                                            {% endif %}
+                                                            
+                                                            {% if ftype in ['text', 'texto'] %}
+                                                                <input type="text" class="form-control" 
+                                                                       id="{{ category }}_{{ field_name }}" 
+                                                                       name="{{ category }}_{{ field_name }}" 
+                                                                       value="{{ display_value }}"
+                                                                       {% if 'DATA' in field_name or 'data' in field_name or 'ADMISSÃO' in field_name or 'admissão' in field_name or 'admissao' in field_name or 'CARREGAMENTO' in field_name or 'OPERAÇÃO' in field_name or 'operaçao' in field_name or 'operacao' in field_name or 'INÍCIO' in field_name or 'INICIO' in field_name or 'TÉRMINO' in field_name or 'TERMINO' in field_name %}
+                                                                       placeholder="DD/MM/AAAA"{% endif %}>
+                                                                {% if 'DATA' in field_name or 'data' in field_name or 'ADMISSÃO' in field_name or 'admissão' in field_name or 'admissao' in field_name or 'CARREGAMENTO' in field_name or 'OPERAÇÃO' in field_name or 'operaçao' in field_name or 'operacao' in field_name or 'INÍCIO' in field_name or 'INICIO' in field_name or 'TÉRMINO' in field_name or 'TERMINO' in field_name %}
+                                                                   <small class="text-muted">Formato: DD/MM/AAAA</small>
+                                                                {% endif %}
+                                                            
+                                                            {% elif ftype in ['date', 'data'] %}
+                                                                {% set date_val = current_value_str %}
+                                                                {% if ' ' in date_val %}
+                                                                    {% set date_val = date_val.split(' ')[0] %}
+                                                                {% endif %}
+                                                                {% if '-' in date_val %}
+                                                                    {% set parts = date_val.split('-') %}
+                                                                    {% if parts|length >= 3 %}
+                                                                        {% set formatted_date = parts[2] + '/' + parts[1] + '/' + parts[0] %}
+                                                                    {% else %}
+                                                                        {% set formatted_date = date_val %}
+                                                                    {% endif %}
+                                                                {% else %}
+                                                                    {% set formatted_date = date_val %}
+                                                                {% endif %}
+                                                                <input type="text" class="form-control" 
+                                                                       id="{{ category }}_{{ field_name }}" 
+                                                                       name="{{ category }}_{{ field_name }}" 
+                                                                       value="{{ formatted_date }}"
+                                                                       placeholder="DD/MM/AAAA">
+                                                                <small class="text-muted">Formato: DD/MM/AAAA</small>
+                                                            
+                                                            {% elif ftype == 'link' %}
+                                                                <input type="url" class="form-control" 
+                                                                       id="{{ category }}_{{ field_name }}" 
+                                                                       name="{{ category }}_{{ field_name }}" 
+                                                                       value="{{ current_value_str }}"
+                                                                       placeholder="https://exemplo.com">
+                                                            
+                                                            {% elif ftype == 'select' %}
+                                                                <select class="form-control" 
+                                                                        id="{{ category }}_{{ field_name }}" 
+                                                                        name="{{ category }}_{{ field_name }}">
+                                                                    <option value="">Selecione...</option>
+                                                                    <option value="Sim" {% if current_value_str == 'Sim' %}selected{% endif %}>Sim</option>
+                                                                    <option value="Não" {% if current_value_str == 'Não' %}selected{% endif %}>Não</option>
+                                                                </select>
+                                                            {% else %}
+                                                                <input type="text" class="form-control" 
+                                                                       id="{{ category }}_{{ field_name }}" 
+                                                                       name="{{ category }}_{{ field_name }}" 
+                                                                       value="{{ current_value_str }}">
+                                                            {% endif %}
+                                                            
+                                                            {% if ftype == 'link' and current_value_str %}
+                                                                <small class="form-text text-muted">
+                                                                    <a href="{{ current_value_str }}" target="_blank">
+                                                                        <i class="fas fa-external-link-alt"></i> Abrir link
+                                                                    </a>
+                                                                </small>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('admin_users') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Voltar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 
+                            {% if edit %}Atualizar{% else %}Cadastrar{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const senha = document.getElementById('senha');
+    const confirmarSenha = document.getElementById('confirmar_senha');
+    
+    form.addEventListener('submit', function(e) {
+        if (senha.value && senha.value !== confirmarSenha.value) {
+            e.preventDefault();
+            alert('As senhas não coincidem!');
+            senha.focus();
+        }
+    });
+});
+</script>
+{% endblock %}

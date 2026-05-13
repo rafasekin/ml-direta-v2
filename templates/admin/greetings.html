@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Saudações - Cronograma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-hand-wave"></i> Configurar Saudações
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-edit"></i> Editar Saudação
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="texto" class="form-label">
+                            <i class="fas fa-text-height"></i> Texto da Saudação
+                        </label>
+                        <textarea class="form-control" id="texto" name="texto" rows="3" placeholder="Bem-vindo(a), {nome}!">{{ greetings.texto }}</textarea>
+                        <small class="text-muted">
+                            Use <code>{nome}</code> para personalizar com o nome do usuário
+                        </small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="imagem" class="form-label">
+                            <i class="fas fa-image"></i> URL da Imagem (opcional)
+                        </label>
+                        <input type="url" class="form-control" id="imagem" name="imagem" 
+                               value="{{ greetings.imagem }}" placeholder="https://exemplo.com/imagem.jpg">
+                        <small class="text-muted">
+                            Imagem será exibida após o texto
+                        </small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="video" class="form-label">
+                            <i class="fas fa-video"></i> URL do Vídeo (opcional)
+                        </label>
+                        <input type="url" class="form-control" id="video" name="video" 
+                               value="{{ greetings.video }}" placeholder="https://exemplo.com/video.mp4">
+                        <small class="text-muted">
+                            Vídeo será exibido após o texto/imagem
+                        </small>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Salvar Saudação
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-eye"></i> Prévia
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="preview-box text-center p-3 border rounded">
+                    <i class="fas fa-hand-wave fa-3x text-primary mb-3"></i>
+                    
+                    <h4 class="mb-3">{{ greetings.texto.replace('{nome}', 'João Silva') or 'Bem-vindo(a), João Silva!' }}</h4>
+                    
+                    {% if greetings.imagem %}
+                    <div class="mb-3">
+                        <img src="{{ greetings.imagem }}" alt="Imagem de saudação" class="img-fluid rounded" style="max-height: 200px;">
+                    </div>
+                    {% endif %}
+                    
+                    {% if greetings.video %}
+                    <div class="mb-3">
+                        <video controls class="w-100" style="max-height: 200px;">
+                            <source src="{{ greetings.video }}" type="video/mp4">
+                            Seu navegador não suporta vídeo.
+                        </video>
+                    </div>
+                    {% endif %}
+                    
+                    <button class="btn btn-primary" disabled>
+                        <i class="fas fa-arrow-right"></i> Continuar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle"></i> Informações
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6>Como Funciona</h6>
+                <p class="text-muted small">
+                    A saudação é exibida toda vez que um usuário faz login no sistema, 
+                    antes de acessar seu dashboard.
+                </p>
+                
+                <h6>Personalização</h6>
+                <p class="text-muted small">
+                    Use <code>{nome}</code> no texto para exibir o nome completo do usuário.
+                </p>
+                
+                <h6>Mídia</h6>
+                <p class="text-muted small">
+                    Imagem e vídeo são opcionais. Se fornecidos, serão exibidos após o texto.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Exemplos -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb"></i> Exemplos de Saudações
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card border-left-primary">
+                            <div class="card-body">
+                                <h6>Boas-vindas</h6>
+                                <p class="small text-muted">"Bem-vindo(a), {nome}! Estamos felizes em tê-lo(a) conosco."</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-left-success">
+                            <div class="card-body">
+                                <h6>Inspiradora</h6>
+                                <p class="small text-muted">"Olá, {nome}! Que seu dia seja produtivo e cheio de conquistas!"</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-left-info">
+                            <div class="card-body">
+                                <h6>Informativa</h6>
+                                <p class="small text-muted">"Bom dia, {nome}! Não se esqueça de verificar suas tarefas."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

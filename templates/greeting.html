@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saudações - ML Direta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .greeting-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+        }
+        .greeting-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+        .greeting-video {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="greeting-card">
+        <div class="greeting-content">
+            <i class="fas fa-hand-wave fa-3x text-primary mb-3"></i>
+            
+            {% if greeting.texto %}
+            <h2 class="mb-4">{{ greeting_text }}</h2>
+            {% endif %}
+            
+            {% if greeting.imagem %}
+            <div class="mb-4">
+                <img src="{{ greeting.imagem }}" alt="Imagem de saudação" class="greeting-image">
+            </div>
+            {% endif %}
+            
+            {% if greeting.video %}
+            <div class="mb-4">
+                <video controls class="greeting-video">
+                    <source src="{{ greeting.video }}" type="video/mp4">
+                    Seu navegador não suporta vídeo.
+                </video>
+            </div>
+            {% endif %}
+            
+            <form method="GET" action="{{ url_for('dashboard') }}">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-arrow-right"></i> Continuar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

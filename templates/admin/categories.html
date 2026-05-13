@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}Categorias e Campos - Cronograma{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-tags"></i> Categorias e Campos Configuráveis
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Categorias -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-folder-plus"></i> Categorias
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin_category_add') }}" class="mb-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="category_name" placeholder="Nome da categoria" required>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Adicionar
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="list-group">
+                    {% for category_name, category_data in categories.items() %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-folder text-primary"></i>
+                                {{ category_name }}
+                                <small class="text-muted ms-2">
+                                    Criado em {{ category_data.created_at }}
+                                </small>
+                            </div>
+                            <span class="badge bg-info">
+                                {{ fields.get(category_name, {}) | length }} campos
+                            </span>
+                        </div>
+                    {% endfor %}
+                    
+                    {% if not categories %}
+                        <div class="text-center text-muted py-3">
+                            <i class="fas fa-inbox fa-2x mb-2"></i>
+                            <p>Nenhuma categoria criada ainda</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Campos -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-plus-square"></i> Adicionar Campo
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin_field_add') }}">
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Categoria *</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="">Selecione uma categoria</option>
+                            {% for category_name in categories.keys() %}
+                                <option value="{{ category_name }}">{{ category_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="field_name" class="form-label">Nome do Campo *</label>
+                        <input type="text" class="form-control" id="field_name" name="field_name" placeholder="Ex: Departamento" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="field_type" class="form-label">Tipo do Campo *</label>
+                        <select class="form-select" id="field_type" name="field_type" required>
+                            <option value="texto">Texto Livre</option>
+                            <option value="data">Data</option>
+                            <option value="link">Link</option>
+                            <option value="selecao">Seleção</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="required" name="required">
+                            <label class="form-check-label" for="required">
+                                Campo obrigatório
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-plus"></i> Adicionar Campo
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Campos por Categoria -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-list"></i> Campos por Categoria
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if fields %}
+                    <!-- Formulário de reordenação -->
+                    <form method="POST" action="{{ url_for('admin_categories_reorder') }}" id="reorder-form">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">
+                                <i class="fas fa-list"></i> Campos por Categoria
+                            </h5>
+                            <button type="submit" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-sort"></i> Salvar Ordem
+                            </button>
+                        </div>
+                        
+                        <div id="categories-container">
+                            {% for category_name, category_fields in fields.items() %}
+                                {% if category_fields %}
+                                    <div class="category-item mb-4" data-category="{{ category_name }}">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h6 class="text-primary mb-0">
+                                                <i class="fas fa-grip-vertical drag-handle"></i>
+                                                <i class="fas fa-folder"></i> {{ category_name }}
+                                            </h6>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('admin_category_edit', category_name=category_name) }}" 
+                                                   class="btn btn-outline-warning">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form method="POST" action="{{ url_for('admin_category_delete', category_name=category_name) }}" 
+                                                      onsubmit="return confirm('Tem certeza que deseja deletar esta categoria e todos os seus campos?')">
+                                                    <button type="submit" class="btn btn-outline-danger">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        
+                                        <input type="hidden" name="category_order" value="{{ category_name }}">
+                                        
+                                        <div class="row fields-container" data-category="{{ category_name }}">
+                                            {% for field_name, field_config in category_fields.items() %}
+                                                <div class="col-md-4 mb-2 field-item" data-field="{{ field_name }}">
+                                                    <input type="hidden" name="field_order_{{ category_name }}" value="{{ field_name }}">
+                                                    <div class="card border-left-primary">
+                                                        <div class="card-body py-2">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <i class="fas fa-grip-vertical drag-handle me-2"></i>
+                                                                    <strong>{{ field_name }}</strong>
+                                                                    <br>
+                                                                    <small class="text-muted">
+                                                                        <i class="fas fa-tag"></i> {{ field_config.type }}
+                                                                        {% if field_config.required %}
+                                                                            <span class="badge bg-danger">Obrigatório</span>
+                                                                        {% endif %}
+                                                                    </small>
+                                                                </div>
+                                                                <div class="btn-group btn-group-sm">
+                                                                    <a href="{{ url_for('admin_field_edit', category_name=category_name, field_name=field_name) }}" 
+                                                                       class="btn btn-outline-warning btn-sm">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </a>
+                                                                    <form method="POST" action="{{ url_for('admin_field_delete', category_name=category_name, field_name=field_name) }}" 
+                                                                          onsubmit="return confirm('Tem certeza que deseja deletar este campo?')">
+                                                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                                            <i class="fas fa-trash"></i>
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="text-center text-muted py-3">
+                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                        <p>Nenhum campo configurado ainda</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Informações -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-info-circle"></i> Como Funciona
+                </h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Categorias</h6>
+                        <p>Organizam os campos em grupos lógicos como "Dados Cadastrais", "Treinamentos", etc.</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Campos</h6>
+                        <p>São adicionados automaticamente ao cadastro de usuários e ao modelo Excel.</p>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-3">
+                        <strong>Texto Livre:</strong> Campo aberto para digitação
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Data:</strong> Seletor de data
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Link:</strong> URL para sites externos
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Seleção:</strong> Opções pré-definidas
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript para Drag and Drop -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar Sortable para o container de categorias
+    const container = document.getElementById('categories-container');
+    
+    if (container) {
+        new Sortable(container, {
+            animation: 150,
+            handle: '.category-item .drag-handle',
+            onEnd: function(evt) {
+                // Atualizar os inputs hidden com a nova ordem
+                const items = container.querySelectorAll('.category-item');
+                const inputs = container.querySelectorAll('input[name="category_order"]');
+                
+                items.forEach((item, index) => {
+                    const categoryName = item.dataset.category;
+                    const input = Array.from(inputs).find(inp => inp.value === categoryName);
+                    if (input) {
+                        // Remover e adicionar na nova posição
+                        input.parentNode.removeChild(input);
+                        item.appendChild(input);
+                    }
+                });
+                
+                console.log('Ordem das categorias atualizada:', Array.from(inputs).map(inp => inp.value));
+            }
+        });
+    }
+    
+    // Inicializar Sortable para cada container de campos
+    const fieldContainers = document.querySelectorAll('.fields-container');
+    
+    fieldContainers.forEach(container => {
+        const categoryName = container.dataset.category;
+        
+        new Sortable(container, {
+            animation: 150,
+            handle: '.field-item .drag-handle',
+            onEnd: function(evt) {
+                // Atualizar os inputs hidden com a nova ordem dos campos
+                const items = container.querySelectorAll('.field-item');
+                const inputs = container.querySelectorAll(`input[name="field_order_${categoryName}"]`);
+                
+                items.forEach((item, index) => {
+                    const fieldName = item.dataset.field;
+                    const input = Array.from(inputs).find(inp => inp.value === fieldName);
+                    if (input) {
+                        // Remover e adicionar na nova posição
+                        input.parentNode.removeChild(input);
+                        item.appendChild(input);
+                    }
+                });
+                
+                console.log(`Ordem dos campos [${categoryName}] atualizada:`, Array.from(inputs).map(inp => inp.value));
+            }
+        });
+    });
+    
+    // Feedback visual ao arrastar
+    const dragHandles = document.querySelectorAll('.drag-handle');
+    dragHandles.forEach(handle => {
+        handle.style.cursor = 'grab';
+        handle.addEventListener('mousedown', function() {
+            this.style.cursor = 'grabbing';
+        });
+        handle.addEventListener('mouseup', function() {
+            this.style.cursor = 'grab';
+        });
+    });
+});
+</script>
+
+{% endblock %}
