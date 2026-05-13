@@ -88,7 +88,12 @@ def format_datetime(date_string):
         return date_string
 
 if not os.path.exists(DATA_DIR):
-    os.makedirs(DATA_DIR)
+    try:
+        os.makedirs(DATA_DIR)
+    except (OSError, PermissionError):
+        # Em produção (Vercel), o sistema de arquivos pode ser somente leitura
+        # Nesse caso, os dados virão do Supabase (via SUPABASE_URL)
+        pass
 
 # Cache para processamento de categorias
 _categories_cache = {}

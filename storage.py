@@ -116,9 +116,14 @@ def save_data(filename, data):
         print(f"Salvo Supabase {filename}")
         return
     start_time = time.time()
-    os.makedirs(os.path.dirname(filename) or ".", exist_ok=True)
-    with open(filename, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2, default=str)
+    try:
+        os.makedirs(os.path.dirname(filename) or ".", exist_ok=True)
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2, default=str)
+    except (OSError, PermissionError):
+        # Sistema de arquivos somente leitura (Vercel); ignorar
+        print(f"Aviso: não foi possível salvar {filename} (sistema somente leitura)")
+        return
     clear_cache(filename)
     print(f"Salvo {filename} em {time.time() - start_time:.3f}s")
 
@@ -257,7 +262,11 @@ def init_data():
         return
 
     if not os.path.exists(DATA_DIR):
-        os.makedirs(DATA_DIR)
+        try:
+            os.makedirs(DATA_DIR)
+        except (OSError, PermissionError):
+            # Sistema de arquivos somente leitura (Vercel)
+            pass
 
     users = load_data(USERS_FILE)
     admin_exists = any(
